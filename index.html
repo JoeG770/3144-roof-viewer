@@ -128,7 +128,7 @@ import {Sky} from './v7_Sky.js';
 import {CSS2DRenderer,CSS2DObject} from './v7_CSS2DRenderer.js';
 import {RoomEnvironment} from './v7_RoomEnvironment.js';
 window.__modStarted=1;window.__st('Starting 3D…',10);
-const TITLES={existing:'Existing roof as built, with the two existing I-beams at the east condensers.',option_a:'Option A · Four Chiltrix CX65 heat pumps and two 700 gal tanks on new dunnage.',option_b:'Option B · Two Mitsubishi QAHV-N136 heat pumps with storage tanks.',option_c:'Option C · Hybrid: one QAHV-N136 faces the tanks (3 ft 6 in front aisle, 4 ft 6 in rear air space) and heats Tank 1 to 150F. Two CX65s side by side, discharging south to open air, run on their own closed glycol loop (green) through the Tank 2 coil; the building recirc return also passes through Tank 2. A mixing valve tempers 150F to 120F.'};
+const TITLES={existing:'Existing roof as built, with the two existing I-beams at the east condensers.',option_a:'Option A · Four Chiltrix CX65 heat pumps and two 700 gal tanks on new dunnage.',option_b:'Option B · Two Mitsubishi QAHV-N136 heat pumps with storage tanks.',option_c:'Option C · Hybrid, compact L-shaped platform (96 sf). Two CX65s sit side by side behind the tanks, facing north (40 in front zone up to the tanks). One QAHV-N136 sits in the south bay facing north (3 ft 4 in front, 4 ft 6 in rear air space over open roof) and heats Tank 1 to 150F. A fixed ladder is on the east edge of the QAHV bay. The CX65s run on their own closed glycol loop (green) through the Tank 2 coil; the building recirc return also passes through Tank 2. A mixing valve tempers 150F to 120F.'};
 const mobile=matchMedia('(pointer:coarse)').matches;
 const stage=document.getElementById('stage');const W=()=>stage.clientWidth,H=()=>stage.clientHeight;
 let R;try{R=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true})}catch(e){try{R=new THREE.WebGLRenderer({antialias:false,powerPreference:'default'})}catch(e2){window.__fail('this browser has WebGL turned off or unavailable. Turn on hardware acceleration (Chrome: Settings > System) and retry.');throw e2}}
@@ -169,7 +169,7 @@ function prep(root){const lb=[];root.traverse(o=>{if(o.isMesh){const mn=o.materi
  lb.forEach(l=>root.add(l));
  // world-ish UV fix for deck: rely on Blender UV (world/3.25)
 }
-async function load(name){if(!cache[name]){const g=await (window.__st('Downloading model…',15),gl.loadAsync(name+'.glb?v=10',x=>{if(!window.__ready&&x.total)window.__st('Downloading model… '+Math.round(x.loaded/x.total*100)+'%',15+80*x.loaded/x.total)}));prep(g.scene);cache[name]=g.scene;walkTargets.length=0}
+async function load(name){if(!cache[name]){const g=await (window.__st('Downloading model…',15),gl.loadAsync(name+'.glb?v=11',x=>{if(!window.__ready&&x.total)window.__st('Downloading model… '+Math.round(x.loaded/x.total*100)+'%',15+80*x.loaded/x.total)}));prep(g.scene);cache[name]=g.scene;walkTargets.length=0}
  for(const k in cache)cache[k].traverse(o=>{if(o.isCSS2DObject)o.element.style.display=k===name?'':'none'});
  if(cur)S.remove(cur);cur=cache[name];S.add(cur);curName=name;
  document.querySelectorAll('#opts button').forEach(b=>b.classList.toggle('on',b.dataset.o===name));document.getElementById('title').textContent=TITLES[name];
@@ -206,7 +206,7 @@ document.querySelectorAll('#views button[data-v]').forEach(b=>b.onclick=()=>view
 const rs=()=>{cam.aspect=W()/H();cam.updateProjectionMatrix();R.setSize(W(),H());L2.setSize(W(),H())};addEventListener('resize',rs);new ResizeObserver(rs).observe(stage);
 const start=(location.hash.slice(1) in TITLES)?location.hash.slice(1):'option_a';
 await load(start);window.__st('Preparing scene…',97);view('eye');{const l=document.getElementById('load')||$('load');l&&l.remove()}window.__ready=true;loop();
-const idle=window.requestIdleCallback||(f=>setTimeout(f,1500));const pre=['existing','option_a','option_b','option_c'].filter(n=>n!==start);const next=()=>{const n=pre.shift();if(!n)return;if(cache[n])return idle(next);gl.loadAsync(n+'.glb?v=10').then(g=>{if(!cache[n]){prep(g.scene);beamify(g.scene);cache[n]=g.scene}}).catch(()=>{}).finally(()=>idle(next))};idle(next);
+const idle=window.requestIdleCallback||(f=>setTimeout(f,1500));const pre=['existing','option_a','option_b','option_c'].filter(n=>n!==start);const next=()=>{const n=pre.shift();if(!n)return;if(cache[n])return idle(next);gl.loadAsync(n+'.glb?v=11').then(g=>{if(!cache[n]){prep(g.scene);beamify(g.scene);cache[n]=g.scene}}).catch(()=>{}).finally(()=>idle(next))};idle(next);
 
 // ---------- Existing I-beam: safety orange, labeled, visible in every view ----------
 const ORANGE=new THREE.MeshStandardMaterial({color:0xff6a00,emissive:0xff4400,emissiveIntensity:0.55,roughness:0.5,metalness:0.1});
@@ -223,11 +223,11 @@ const _load=load;async function load2(n){await _load(n);beamify(cache[n]);for(co
 document.querySelectorAll('#opts button').forEach(b=>b.onclick=()=>load2(b.dataset.o));
 // ---------- How it's built ----------
 const POSTM=new THREE.MeshStandardMaterial({color:0xd0021b,emissive:0x600000,roughness:0.45});const STEEL=new THREE.MeshStandardMaterial({color:0x1e6fff,roughness:0.45,metalness:0.3});
-const cls=n=>/^(EXIST_|GROUND_|DEMO_|beam_xray)/.test(n)?0:/^(post|base_plate|stub)/i.test(n)?1:/^beam_/.test(n)?2:/^(grating|guardrail|toe_board|stair_)/.test(n)?3:4;
+const cls=n=>/^(EXIST_|GROUND_|DEMO_|beam_xray)/.test(n)?0:/^(post|base_plate|stub)/i.test(n)?1:/^beam_/.test(n)?2:/^(grating|guardrail|toe_board|stair_|ladder_)/.test(n)?3:4;
 const STEPS=[['1. Existing roof','The roof today. The two orange steel members are the existing E-W I-beams 1 and 2 (seen in the Matterport at the east condensers); the brick bearing walls are below the parapets. The old condensers come out.'],
  ['2. Posts','Short steel posts (red) bolt down onto existing I-beams 1 and 2 and onto the bearing walls. That is how the new steel anchors to the building.'],
  ['3. Dunnage beams','New steel beams (blue) sit on top of the posts and form a grid above the roof.'],
- ['4. Platform','Grating deck, guardrails and stair go on the steel grid.'],
+ ['4. Platform','Grating deck, guardrails and stair or ladder go on the steel grid.'],
  ['5. Equipment','Heat pumps, tanks and piping sit on the platform.']];
 let building=false,bstep=4,marks=null;
 const bs=document.getElementById('bsteps');STEPS.forEach((t,i)=>{const b=document.createElement('button');b.className='st';b.textContent=t[0];b.onclick=()=>setStep(i);bs.appendChild(b)});
@@ -285,7 +285,7 @@ window.__meas={pick:mPick,close:closeShape,clear:mClear};
 
 // ---------- Equipment weights (dry / operating). Sources: roofmodel/out/weights.json; EST = estimated ----------
 const WT=[[/^tank\.?\d*$|^C_tank/,'700 gal tank · 204 lb dry / 6,046 lb full',0],[/^CX65\.?\d*$|^C_CX65/,'CX65 · 336 lb dry / ~346 lb op (water EST)',1],[/^QAHV\.?\d*$|^C_QAHV/,'QAHV-N136 · 895 lb dry / ~915 lb op (water EST)',1],[/^swing_tank$/,'Swing tank · EST 150 lb dry / 817 lb full (size TBD)',1],[/^C_TMV/,'Mixing valve · EST 40 / 50 lb',1]];
-const WSUM={"option_a": {"dry": 4466, "op": 16190, "b1": 7413, "b2": 6390, "p": 2387, "area": 135, "util": 0.59}, "option_b": {"dry": 4296, "op": 16687, "b1": 7498, "b2": 6390, "p": 2799, "area": 84, "util": 0.6}, "option_c": {"dry": 5406, "op": 17140, "b1": 7712, "b2": 6390, "p": 3038, "area": 180, "util": 0.61}};let wtOn=false;
+const WSUM={"option_a": {"dry": 4466, "op": 16190, "b1": 7413, "b2": 6390, "p": 2387, "area": 135, "util": 0.59}, "option_b": {"dry": 4296, "op": 16687, "b1": 7498, "b2": 6390, "p": 2799, "area": 84, "util": 0.6}, "option_c": {"dry": 4143, "op": 15877, "b1": 7136, "b2": 6390, "p": 2351, "area": 96, "util": 0.58}};let wtOn=false;
 function wtify(root){if(root.userData.wt)return;root.userData.wt=1;let nW=0;const done=new Set();
  root.traverse(o=>{if(done.has(o))return;const m=WT.find(w=>w[0].test(o.name));if(!m)return;o.traverse(x=>done.add(x));
   const bb=new THREE.Box3().setFromObject(o);if(bb.isEmpty())return;const c=new THREE.Vector3();bb.getCenter(c);
