@@ -73,15 +73,15 @@ header{justify-content:flex-start;align-items:center}header small{display:none}
  body.drawer #side{transform:none}body.drawer #scrim{display:block;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:35}
  #side #legend{display:grid}#side #build{display:block}}
 </style></head><body>
-<header><button id="navbtn" aria-label="Open controls">☰</button><h1>3144 Third Ave — Roof DHW Options</h1><small>Bronx, NY · Owner coordination model</small></header>
+<header><button id="navbtn" aria-label="Open controls">☰</button><h1>3144 Third Ave — Roof DHW · Option C</h1><small>Bronx, NY · Owner coordination model</small></header>
 <div class="wrap">
 <div class="panel mpanel"><div class="ph"><span class="cap">3D model</span>
-<div id="opts" class="seg"><button data-o="existing">Existing</button><button data-o="option_a">A</button><button data-o="option_b">B</button><button data-o="option_c">C</button></div>
+<div id="opts" class="seg"><button data-o="existing">Existing</button><button data-o="option_c">Option C</button></div>
 <button id="howbtn">How it's built</button></div>
 <div id="title"></div>
 <div id="stage">
-<div id="load"><img id="poster" alt=""><div id="lbox"><span id="lstat">Loading roof model…</span><div id="lbar"><i></i></div></div></div><script>(function(){var h=location.hash.slice(1);if(!/^(existing|option_[abc])$/.test(h))h="option_a";var i=document.getElementById("poster");i.onerror=function(){i.remove()};i.src="posters/"+h+".jpg"})()</script>
-<div id="build" style="display:none"><b>How it's built (Option A platform)</b><div id="bsteps"></div><div id="bstep"></div>
+<div id="load"><img id="poster" alt=""><div id="lbox"><span id="lstat">Loading roof model…</span><div id="lbar"><i></i></div></div></div><script>(function(){var h=location.hash.slice(1);if(!/^(existing|option_c)$/.test(h))h="option_c";var i=document.getElementById("poster");i.onerror=function(){i.remove()};i.src="posters/"+h+".jpg"})()</script>
+<div id="build" style="display:none"><b>How it's built (Option C platform)</b><div id="bsteps"></div><div id="bstep"></div>
 <div class="key"><span><i style="background:#e8590c"></i>Existing I-beams</span><span><i style="background:#1e6fff"></i>New steel</span><span><i style="background:#c0392b"></i>Posts</span></div></div>
 <button id="wtbtn" title="Show equipment weights">Weights</button><div id="wtsum"></div><button id="measbtn" title="Measure length or area"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17 17 3l4 4L7 21z"/><path d="M7 13l2 2M10 10l2 2M13 7l2 2"/></svg>Measure</button>
 <div id="meas"><div class="row"><button data-m="len" class="on">Length</button><button data-m="area">Area</button><button id="mdone">Close shape</button><button id="mclear">Clear</button></div><div id="mread">Tap two points to measure a length.</div></div>
@@ -128,7 +128,7 @@ import {Sky} from './v7_Sky.js';
 import {CSS2DRenderer,CSS2DObject} from './v7_CSS2DRenderer.js';
 import {RoomEnvironment} from './v7_RoomEnvironment.js';
 window.__modStarted=1;window.__st('Starting 3D…',10);
-const TITLES={existing:'Existing roof as built, with the two existing I-beams at the east condensers.',option_a:'Option A · Four Chiltrix CX65 heat pumps and two 700 gal tanks on new dunnage.',option_b:'Option B · Two Mitsubishi QAHV-N136 heat pumps with storage tanks.',option_c:'Option C · Hybrid, compact L-shaped platform (96 sf). Two CX65s sit side by side behind the tanks, facing north (40 in front zone up to the tanks). One QAHV-N136 sits in the south bay facing north (3 ft 4 in front, 4 ft 6 in rear air space over open roof) and heats Tank 1 to 150F. A fixed ladder is on the east edge of the QAHV bay. The CX65s run on their own closed glycol loop (green) through the Tank 2 coil; the building recirc return also passes through Tank 2. A mixing valve tempers 150F to 120F.'};
+const TITLES={existing:'Existing roof as built, with the two existing I-beams at the east condensers.',option_c:'Option C · Hybrid, compact L-shaped platform (96 sf). Two CX65s sit side by side behind the tanks, facing north (40 in front zone up to the tanks). One QAHV-N136 sits in the south bay facing north (3 ft 4 in front, 4 ft 6 in rear air space over open roof) and heats Tank 1 to 150F. A steel stair (6 risers at 6½ in, 5 treads at 11 in, 3 ft 4 in wide, two handrails and 42 in guards) comes down from a small landing on the east edge of the QAHV bay, clear of the FDNY strip. The CX65s run on their own closed glycol loop (green) through the Tank 2 coil; the building recirc return also passes through Tank 2. A mixing valve tempers 150F to 120F.'};
 const mobile=matchMedia('(pointer:coarse)').matches;
 const stage=document.getElementById('stage');const W=()=>stage.clientWidth,H=()=>stage.clientHeight;
 let R;try{R=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true})}catch(e){try{R=new THREE.WebGLRenderer({antialias:false,powerPreference:'default'})}catch(e2){window.__fail('this browser has WebGL turned off or unavailable. Turn on hardware acceleration (Chrome: Settings > System) and retry.');throw e2}}
@@ -169,7 +169,7 @@ function prep(root){const lb=[];root.traverse(o=>{if(o.isMesh){const mn=o.materi
  lb.forEach(l=>root.add(l));
  // world-ish UV fix for deck: rely on Blender UV (world/3.25)
 }
-async function load(name){if(!cache[name]){const g=await (window.__st('Downloading model…',15),gl.loadAsync(name+'.glb?v=11',x=>{if(!window.__ready&&x.total)window.__st('Downloading model… '+Math.round(x.loaded/x.total*100)+'%',15+80*x.loaded/x.total)}));prep(g.scene);cache[name]=g.scene;walkTargets.length=0}
+async function load(name){if(!cache[name]){const g=await (window.__st('Downloading model…',15),gl.loadAsync(name+'.glb?v=12',x=>{if(!window.__ready&&x.total)window.__st('Downloading model… '+Math.round(x.loaded/x.total*100)+'%',15+80*x.loaded/x.total)}));prep(g.scene);cache[name]=g.scene;walkTargets.length=0}
  for(const k in cache)cache[k].traverse(o=>{if(o.isCSS2DObject)o.element.style.display=k===name?'':'none'});
  if(cur)S.remove(cur);cur=cache[name];S.add(cur);curName=name;
  document.querySelectorAll('#opts button').forEach(b=>b.classList.toggle('on',b.dataset.o===name));document.getElementById('title').textContent=TITLES[name];
@@ -204,9 +204,9 @@ function step(dt){let f=(keys.KeyW||keys.ArrowUp?1:0)-(keys.KeyS||keys.ArrowDown
 function loop(){requestAnimationFrame(loop);const dt=Math.min(clk.getDelta(),0.1);if(walking)step(dt);else OC.update();R.render(S,cam);L2.render(S,cam)}
 document.querySelectorAll('#views button[data-v]').forEach(b=>b.onclick=()=>view(b.dataset.v));
 const rs=()=>{cam.aspect=W()/H();cam.updateProjectionMatrix();R.setSize(W(),H());L2.setSize(W(),H())};addEventListener('resize',rs);new ResizeObserver(rs).observe(stage);
-const start=(location.hash.slice(1) in TITLES)?location.hash.slice(1):'option_a';
+const start=(location.hash.slice(1) in TITLES)?location.hash.slice(1):'option_c';
 await load(start);window.__st('Preparing scene…',97);view('eye');{const l=document.getElementById('load')||$('load');l&&l.remove()}window.__ready=true;loop();
-const idle=window.requestIdleCallback||(f=>setTimeout(f,1500));const pre=['existing','option_a','option_b','option_c'].filter(n=>n!==start);const next=()=>{const n=pre.shift();if(!n)return;if(cache[n])return idle(next);gl.loadAsync(n+'.glb?v=11').then(g=>{if(!cache[n]){prep(g.scene);beamify(g.scene);cache[n]=g.scene}}).catch(()=>{}).finally(()=>idle(next))};idle(next);
+const idle=window.requestIdleCallback||(f=>setTimeout(f,1500));const pre=['existing','option_c'].filter(n=>n!==start);const next=()=>{const n=pre.shift();if(!n)return;if(cache[n])return idle(next);gl.loadAsync(n+'.glb?v=12').then(g=>{if(!cache[n]){prep(g.scene);beamify(g.scene);cache[n]=g.scene}}).catch(()=>{}).finally(()=>idle(next))};idle(next);
 
 // ---------- Existing I-beam: safety orange, labeled, visible in every view ----------
 const ORANGE=new THREE.MeshStandardMaterial({color:0xff6a00,emissive:0xff4400,emissiveIntensity:0.55,roughness:0.5,metalness:0.1});
@@ -219,7 +219,7 @@ function beamify(root){if(root.userData.beam)return;root.userData.beam=1;root.us
   const d=document.createElement('div');d.className='lbl beam';d.textContent=`EXISTING I-BEAM ${k} · ${k===2?'≈S10x25.4':'size not resolvable, assumed = beam 2'} · EST from scan, EOR to verify`;const l=new CSS2DObject(d);l.position.set(c.x+(k===1?-3:3),bb.max.y+(k===1?1.2:2.6),c.z);root.add(l);root.userData.beams.push({k,bb})}
  root.userData.beamBox=root.userData.beams[0]&&root.userData.beams[0].bb}
 for(const k in cache)beamify(cache[k]);
-const _load=load;async function load2(n){await _load(n);beamify(cache[n]);for(const k in cache)cache[k].traverse(o=>{if(o.isCSS2DObject)o.element.style.display=k===n?'':'none'});if(n!=='option_a'&&building)setBuild(false)}
+const _load=load;async function load2(n){await _load(n);beamify(cache[n]);for(const k in cache)cache[k].traverse(o=>{if(o.isCSS2DObject)o.element.style.display=k===n?'':'none'});if(n!=='option_c'&&building)setBuild(false)}
 document.querySelectorAll('#opts button').forEach(b=>b.onclick=()=>load2(b.dataset.o));
 // ---------- How it's built ----------
 const POSTM=new THREE.MeshStandardMaterial({color:0xd0021b,emissive:0x600000,roughness:0.45});const STEEL=new THREE.MeshStandardMaterial({color:0x1e6fff,roughness:0.45,metalness:0.3});
@@ -227,7 +227,7 @@ const cls=n=>/^(EXIST_|GROUND_|DEMO_|beam_xray)/.test(n)?0:/^(post|base_plate|st
 const STEPS=[['1. Existing roof','The roof today. The two orange steel members are the existing E-W I-beams 1 and 2 (seen in the Matterport at the east condensers); the brick bearing walls are below the parapets. The old condensers come out.'],
  ['2. Posts','Short steel posts (red) bolt down onto existing I-beams 1 and 2 and onto the bearing walls. That is how the new steel anchors to the building.'],
  ['3. Dunnage beams','New steel beams (blue) sit on top of the posts and form a grid above the roof.'],
- ['4. Platform','Grating deck, guardrails and stair or ladder go on the steel grid.'],
+ ['4. Platform','Grating deck, guardrails and the stair go on the steel grid.'],
  ['5. Equipment','Heat pumps, tanks and piping sit on the platform.']];
 let building=false,bstep=4,marks=null;
 const bs=document.getElementById('bsteps');STEPS.forEach((t,i)=>{const b=document.createElement('button');b.className='st';b.textContent=t[0];b.onclick=()=>setStep(i);bs.appendChild(b)});
@@ -238,13 +238,13 @@ function bearing(root){if(marks)return marks;marks=new THREE.Group();const BS=ro
  const mk=(t,x,y,z)=>{const d=document.createElement('div');d.className='lbl post';d.textContent=t;const l=new CSS2DObject(d);l.position.set(x,y,z);marks.add(l)};
  BS.forEach(e=>mk(`${cnt[e.k]||0} posts bear on existing I-beam ${e.k}`,e.bb.max.x-2,e.bb.max.y+(e.k===1?4.2:3),(e.bb.min.z+e.bb.max.z)/2));mk(`${nw} posts bear on bearing walls / roof structure (EOR)`,9,4,17);
  root.add(marks);return marks}
-function setStep(i){bstep=i;const r=cache.option_a;bs.querySelectorAll('button').forEach((b,j)=>b.classList.toggle('on',j===i));document.getElementById('bstep').textContent=STEPS[i][1];
+function setStep(i){bstep=i;const r=cache.option_c;bs.querySelectorAll('button').forEach((b,j)=>b.classList.toggle('on',j===i));document.getElementById('bstep').textContent=STEPS[i][1];
  r.traverse(o=>{if(o.isMesh&&o.name!=='beam_xray'){const k=cls(o.name);if(/^DEMO_/.test(o.name))o.visible=i===0;else o.visible=k<=i;
   if(k===1||k===2){if(!o.userData.om)o.userData.om=o.material;o.material=building?(k===1?POSTM:STEEL):o.userData.om}}});
  r.children.forEach(c=>{if(c.isCSS2DObject&&!c.element.classList.contains('beam'))c.visible=(!building||i>=4)});
  const m=bearing(r);m.visible=building&&i>=1&&i<=2;m.children.forEach(c=>{if(c.isCSS2DObject)c.element.style.display=m.visible?'':'none'})}
 async function setBuild(on){building=on;document.getElementById('howbtn').classList.toggle('on',on);document.getElementById('build').style.display=on?'block':'none';
- if(on){if(curName!=='option_a')await load2('option_a');setStep(1);view('drone')}else if(cache.option_a){setStep(4);if(marks){marks.visible=false;marks.children.forEach(c=>{if(c.isCSS2DObject)c.element.style.display='none'})}}}
+ if(on){if(curName!=='option_c')await load2('option_c');setStep(1);view('drone')}else if(cache.option_c){setStep(4);if(marks){marks.visible=false;marks.children.forEach(c=>{if(c.isCSS2DObject)c.element.style.display='none'})}}}
 document.getElementById('howbtn').onclick=()=>setBuild(!building);
 // ---------- Matterport panel (stacked under the 3D model) ----------
 const MP=new URLSearchParams(location.search).get('mp')||window.MATTERPORT_URL||'';
@@ -285,7 +285,7 @@ window.__meas={pick:mPick,close:closeShape,clear:mClear};
 
 // ---------- Equipment weights (dry / operating). Sources: roofmodel/out/weights.json; EST = estimated ----------
 const WT=[[/^tank\.?\d*$|^C_tank/,'700 gal tank · 204 lb dry / 6,046 lb full',0],[/^CX65\.?\d*$|^C_CX65/,'CX65 · 336 lb dry / ~346 lb op (water EST)',1],[/^QAHV\.?\d*$|^C_QAHV/,'QAHV-N136 · 895 lb dry / ~915 lb op (water EST)',1],[/^swing_tank$/,'Swing tank · EST 150 lb dry / 817 lb full (size TBD)',1],[/^C_TMV/,'Mixing valve · EST 40 / 50 lb',1]];
-const WSUM={"option_a": {"dry": 4466, "op": 16190, "b1": 7413, "b2": 6390, "p": 2387, "area": 135, "util": 0.59}, "option_b": {"dry": 4296, "op": 16687, "b1": 7498, "b2": 6390, "p": 2799, "area": 84, "util": 0.6}, "option_c": {"dry": 4143, "op": 15877, "b1": 7136, "b2": 6390, "p": 2351, "area": 96, "util": 0.58}};let wtOn=false;
+const WSUM={"option_c": {"dry": 4793, "op": 16527, "b1": 7136, "b2": 6390, "p": 3001, "area": 96, "util": 0.58}};let wtOn=false;
 function wtify(root){if(root.userData.wt)return;root.userData.wt=1;let nW=0;const done=new Set();
  root.traverse(o=>{if(done.has(o))return;const m=WT.find(w=>w[0].test(o.name));if(!m)return;o.traverse(x=>done.add(x));
   const bb=new THREE.Box3().setFromObject(o);if(bb.isEmpty())return;const c=new THREE.Vector3();bb.getCenter(c);
