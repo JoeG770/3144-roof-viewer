@@ -1,0 +1,113 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<link rel="icon" href="favicon.svg" type="image/svg+xml"><title>3144 Third Ave Roof Viewer</title>
+<style>
+html,body{margin:0;height:100%;overflow:hidden;background:#cfd8e3;font-family:-apple-system,Segoe UI,Roboto,sans-serif;touch-action:none}
+#c{position:fixed;inset:0}
+.bar{position:fixed;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:5}
+#opts{top:10px}#views{bottom:12px}
+button{border:0;border-radius:12px;padding:12px 16px;font-size:16px;font-weight:700;background:rgba(255,255,255,.85);color:#222;box-shadow:0 2px 8px rgba(0,0,0,.2);cursor:pointer}
+button.on{background:#1f5fbf;color:#fff}
+#opts button{min-width:64px;font-size:18px}
+#title{position:fixed;left:10px;top:66px;font-size:13px;color:#223;background:rgba(255,255,255,.7);padding:6px 9px;border-radius:8px;z-index:5;max-width:60vw}
+.lbl{background:rgba(20,30,50,.8);color:#fff;font-size:12px;padding:3px 7px;border-radius:6px;white-space:nowrap;pointer-events:none}
+#joy{position:fixed;left:24px;bottom:84px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.35);border:2px solid rgba(255,255,255,.8);display:none;z-index:6;touch-action:none}
+#knob{position:absolute;left:35px;top:35px;width:50px;height:50px;border-radius:50%;background:rgba(31,95,191,.85)}
+#look{position:fixed;right:10px;bottom:84px;color:#223;font-size:12px;background:rgba(255,255,255,.7);padding:5px 8px;border-radius:8px;display:none;z-index:5}
+#load{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;font-size:20px;color:#223;z-index:9;background:#cfd8e3}
+</style></head><body>
+<div id="load">Loading roof model…</div>
+<div id="opts" class="bar"><button data-o="existing">Existing</button><button data-o="option_a">A</button><button data-o="option_b">B</button><button data-o="option_c">C</button></div>
+<div id="title"></div>
+<div id="views" class="bar"><button data-v="eye">Eye</button><button data-v="drone">Drone</button><button data-v="plan">Plan</button><button id="walk">Walk</button></div>
+<div id="joy"><div id="knob"></div></div><div id="look">Drag right side to look · WASD on keyboard</div>
+<script type="importmap">{"imports":{"three":"./lib/three.module.js","three/addons/":"./lib/jsm/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
+import {DRACOLoader} from 'three/addons/loaders/DRACOLoader.js';
+import {Sky} from 'three/addons/objects/Sky.js';
+import {CSS2DRenderer,CSS2DObject} from 'three/addons/renderers/CSS2DRenderer.js';
+import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
+const TITLES={existing:'EXISTING roof (as-built)',option_a:'OPTION A: 4 Chiltrix CX65 + 2 x 700 gal tanks on dunnage',option_b:'OPTION B: 2 Mitsubishi QAHV-N136 + tanks',option_c:'OPTION C: Option A + 9 PowerPanel PVT1 on steel canopy (22°)'};
+const mobile=matchMedia('(pointer:coarse)').matches;
+const R=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});
+R.setPixelRatio(Math.min(devicePixelRatio,mobile?1.5:2));R.setSize(innerWidth,innerHeight);
+R.toneMapping=THREE.ACESFilmicToneMapping;R.toneMappingExposure=0.5;R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;
+R.domElement.id='c';document.body.appendChild(R.domElement);
+const L2=new CSS2DRenderer();L2.setSize(innerWidth,innerHeight);Object.assign(L2.domElement.style,{position:'fixed',top:0,left:0,pointerEvents:'none'});document.body.appendChild(L2.domElement);
+const S=new THREE.Scene();
+const cam=new THREE.PerspectiveCamera(60,innerWidth/innerHeight,0.3,3000);
+// sky + warm low sun (matches Blender SUN: warm 1.0/.66/.40)
+const sky=new Sky();sky.scale.setScalar(2500);S.add(sky);
+const sunDir=new THREE.Vector3(0.49,0.24,-0.84).normalize();
+const u=sky.material.uniforms;u.turbidity.value=4;u.rayleigh.value=1.2;u.mieCoefficient.value=0.004;u.mieDirectionalG.value=0.8;u.sunPosition.value.copy(sunDir);
+const pm=new THREE.PMREMGenerator(R);S.environment=pm.fromScene(new RoomEnvironment(),0.04).texture;S.environmentIntensity=0.35;
+S.add(new THREE.HemisphereLight(0xcfe0ff,0x8a7f70,0.9));
+const sun=new THREE.DirectionalLight(0xffc89a,3.2);sun.position.copy(sunDir).multiplyScalar(120).add(new THREE.Vector3(5,0,10));sun.target.position.set(5,0,10);
+sun.castShadow=true;sun.shadow.mapSize.set(mobile?2048:4096,mobile?2048:4096);const sc=sun.shadow.camera;sc.left=-45;sc.right=45;sc.top=45;sc.bottom=-45;sc.near=1;sc.far=300;sun.shadow.bias=-0.0004;sun.shadow.normalBias=0.04;sun.shadow.radius=4;
+S.add(sun,sun.target);
+// procedural textures (Blender procedurals don't export)
+function canvasTex(w,h,draw,rep){const c=document.createElement('canvas');c.width=w;c.height=h;draw(c.getContext('2d'),w,h);const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=8;if(rep)t.repeat.set(...rep);return t}
+const membrane=canvasTex(512,512,(g,w,h)=>{g.fillStyle='#a5a7a8';g.fillRect(0,0,w,h);for(let i=0;i<9000;i++){const v=150+Math.random()*30|0;g.fillStyle=`rgba(${v},${v},${v+2},.25)`;g.fillRect(Math.random()*w,Math.random()*h,2,2)}g.fillStyle='rgba(120,122,124,.55)';g.fillRect(0,0,10,h);g.fillStyle='rgba(120,122,124,.25)';g.fillRect(0,0,w,3)});
+const brick=canvasTex(256,256,(g,w,h)=>{g.fillStyle='#bfb8ad';g.fillRect(0,0,w,h);const bh=h/8,bw=w/4;for(let r=0;r<8;r++)for(let c=-1;c<5;c++){const x=c*bw+(r%2?bw/2:0);const k=Math.random()*25;g.fillStyle=`rgb(${165+k|0},${78+k*.6|0},${55+k*.4|0})`;g.fillRect(x+3,r*bh+3,bw-6,bh-6)}});
+const pvt=canvasTex(256,256,(g,w,h)=>{g.fillStyle='#0d1626';g.fillRect(0,0,w,h);g.strokeStyle='#5a6a80';g.lineWidth=2;for(let i=1;i<7;i++){g.beginPath();g.moveTo(i*w/7,0);g.lineTo(i*w/7,h);g.stroke()}for(let j=1;j<4;j++){g.beginPath();g.moveTo(0,j*h/4);g.lineTo(w,j*h/4);g.stroke()}});
+function fixMat(o){const m=o.material;if(!m||m.userData.fixed)return;m.userData.fixed=1;const n=m.name;
+ if(n==='EXIST_roofing'){m.map=membrane;m.color.set(0xffffff);m.roughness=0.85;m.metalness=0}
+ else if(n==='EXIST_brick'){m.map=brick;m.color.set(0xffffff);m.roughness=0.9;m.metalness=0;m.map.repeat.set(1,1)}
+ else if(n==='PVT_glass'){m.map=pvt;m.color.set(0xffffff);m.roughness=0.12;m.metalness=0.2}
+ else if(n==='galv'){m.metalness=0.9;m.roughness=0.35;m.color.set(0xb8bcc0)}
+ else if(m.roughness===undefined||m.roughness>=1)m.roughness=0.7;
+ m.needsUpdate=true}
+const dl=new DRACOLoader().setDecoderPath('./lib/draco/');const gl=new GLTFLoader().setDRACOLoader(dl);
+const cache={};let cur=null,curName='';const labels=[];
+const LBL=[[/^tank(\.\d+)?$/,'700 gal tank'],[/^CX65(\.\d+)?$/,'CX65 heat pump'],[/^QAHV(\.\d+)?$/,'QAHV heat pump'],[/^swing_tank$/,'Swing tank'],[/^C_PVT1_panel_05/,'PVT array (9 × PVT1)']];
+function boxUV(o,sz){const g=o.geometry;if(g.userData.buv)return;g.userData.buv=1;o.updateWorldMatrix(true,false);const p=g.attributes.position,n=g.attributes.normal,v=new THREE.Vector3(),w=new THREE.Vector3(),uv=new Float32Array(p.count*2);const nm=new THREE.Matrix3().getNormalMatrix(o.matrixWorld);
+ for(let i=0;i<p.count;i++){v.fromBufferAttribute(p,i).applyMatrix4(o.matrixWorld);w.fromBufferAttribute(n,i).applyMatrix3(nm);const ax=Math.abs(w.x),ay=Math.abs(w.y),az=Math.abs(w.z);let a,b;if(ay>=ax&&ay>=az){a=v.x;b=v.z}else if(ax>=az){a=v.z;b=v.y}else{a=v.x;b=v.y}uv[2*i]=a/sz;uv[2*i+1]=b/sz}g.setAttribute('uv',new THREE.BufferAttribute(uv,2))}
+function prep(root){const lb=[];root.traverse(o=>{if(o.isMesh){const mn=o.material&&o.material.name;if(mn==='EXIST_brick')boxUV(o,2.67);if(mn==='EXIST_roofing'&&!o.geometry.attributes.uv)boxUV(o,3.25);o.castShadow=o.receiveShadow=true;(Array.isArray(o.material)?o.material:[o.material]).forEach(m=>fixMat({material:m}))}
+ for(const[re,t] of LBL)if(re.test(o.name)){const b=new THREE.Box3().setFromObject(o);const d=document.createElement('div');d.className='lbl';d.textContent=t;const l=new CSS2DObject(d);b.getCenter(l.position);l.position.y=b.max.y+0.8;lb.push(l)}});
+ lb.forEach(l=>root.add(l));
+ // world-ish UV fix for deck: rely on Blender UV (world/3.25)
+}
+async function load(name){if(!cache[name]){const g=await gl.loadAsync(name+'.glb');prep(g.scene);cache[name]=g.scene;walkTargets.length=0}
+ for(const k in cache)cache[k].traverse(o=>{if(o.isCSS2DObject)o.element.style.display=k===name?'':'none'});
+ if(cur)S.remove(cur);cur=cache[name];S.add(cur);curName=name;
+ document.querySelectorAll('#opts button').forEach(b=>b.classList.toggle('on',b.dataset.o===name));document.getElementById('title').textContent=TITLES[name];
+ history.replaceState(null,'','#'+name);}
+const OC=new OrbitControls(cam,R.domElement);OC.enableDamping=true;OC.maxPolarAngle=Math.PI*0.495;OC.minDistance=3;OC.maxDistance=400;
+const V={eye:[[16,5.5,28],[11.93,4.78,18.9],72],drone:[[32,24,22],[25.17,17.69,18.32],70],plan:[[7.5,90,10.01],[7.5,0,10],40]};
+let walking=false;
+function view(k){setWalk(false);const[p,t,f]=V[k];cam.position.set(...p);OC.target.set(...t);cam.fov=f;cam.updateProjectionMatrix();OC.update();document.querySelectorAll('#views button[data-v]').forEach(b=>b.classList.toggle('on',b.dataset.v===k))}
+// walk mode
+const walkTargets=[];const ray=new THREE.Raycaster();let yaw=0,pitch=0;const keys={};let jx=0,jy=0;
+const BOUND={x0:-84,x1:25,z0:1,z1:68};
+function floorAt(x,z,fromY){ray.set(new THREE.Vector3(x,fromY,z),new THREE.Vector3(0,-1,0));ray.far=60;const h=ray.intersectObject(cur,true).filter(i=>i.object.isMesh&&i.face&&i.face.normal.y>-2);return h.length?h[0].point.y:null}
+function setWalk(on){walking=on;OC.enabled=!on;document.getElementById('walk').classList.toggle('on',on);document.getElementById('joy').style.display=on?'block':'none';document.getElementById('look').style.display=on?'block':'none';
+ if(on){document.querySelectorAll('#views button[data-v]').forEach(b=>b.classList.remove('on'));let x=Math.min(Math.max(cam.position.x,BOUND.x0),BOUND.x1),z=Math.min(Math.max(cam.position.z,BOUND.z0),BOUND.z1);if(cam.position.y>12){x=12;z=24}
+  const f=floorAt(x,z,(cam.position.y>12?40:cam.position.y+1));cam.position.set(x,(f??0)+5.5,z);cam.fov=75;cam.updateProjectionMatrix();const d=new THREE.Vector3();cam.getWorldDirection(d);yaw=Math.atan2(-d.x,-d.z);pitch=0}}
+document.getElementById('walk').onclick=()=>setWalk(!walking);
+addEventListener('keydown',e=>keys[e.code]=1);addEventListener('keyup',e=>keys[e.code]=0);
+const joy=document.getElementById('joy'),knob=document.getElementById('knob');let jid=null;
+joy.addEventListener('pointerdown',e=>{jid=e.pointerId;joy.setPointerCapture(jid);jm(e)});joy.addEventListener('pointermove',e=>{if(e.pointerId===jid)jm(e)});
+joy.addEventListener('pointerup',()=>{jid=null;jx=jy=0;knob.style.left=knob.style.top='35px'});
+function jm(e){const r=joy.getBoundingClientRect();let dx=e.clientX-r.left-60,dy=e.clientY-r.top-60;const m=Math.hypot(dx,dy);if(m>45){dx*=45/m;dy*=45/m}jx=dx/45;jy=dy/45;knob.style.left=35+dx+'px';knob.style.top=35+dy+'px'}
+let lp=null;R.domElement.addEventListener('pointerdown',e=>{if(walking){lp=[e.clientX,e.clientY,e.pointerId]}});
+R.domElement.addEventListener('pointermove',e=>{if(walking&&lp&&lp[2]===e.pointerId){yaw-=(e.clientX-lp[0])*0.005;pitch=Math.max(-1.2,Math.min(1.2,pitch-(e.clientY-lp[1])*0.005));lp[0]=e.clientX;lp[1]=e.clientY}});
+addEventListener('pointerup',e=>{if(lp&&lp[2]===e.pointerId)lp=null});
+const clk=new THREE.Clock();
+function step(dt){let f=(keys.KeyW||keys.ArrowUp?1:0)-(keys.KeyS||keys.ArrowDown?1:0)-jy,s=(keys.KeyD?1:0)-(keys.KeyA?1:0)+jx;
+ if(keys.ArrowLeft)yaw+=dt*1.5;if(keys.ArrowRight)yaw-=dt*1.5;
+ const sp=6*dt;const nx=cam.position.x+(-Math.sin(yaw)*f+Math.cos(yaw)*s)*sp,nz=cam.position.z+(-Math.cos(yaw)*f-Math.sin(yaw)*s)*sp;
+ if((f||s)&&nx>BOUND.x0&&nx<BOUND.x1&&nz>BOUND.z0&&nz<BOUND.z1){const fl=floorAt(nx,nz,cam.position.y-5.5+2.2);const old=cam.position.y-5.5;
+  if(fl!==null&&fl-old<1.6&&old-fl<3.5){cam.position.set(nx,fl+5.5,nz)}}
+ cam.rotation.set(pitch,yaw,0,'YXZ')}
+function loop(){requestAnimationFrame(loop);const dt=Math.min(clk.getDelta(),0.1);if(walking)step(dt);else OC.update();R.render(S,cam);L2.render(S,cam)}
+document.querySelectorAll('#opts button').forEach(b=>b.onclick=()=>load(b.dataset.o));
+document.querySelectorAll('#views button[data-v]').forEach(b=>b.onclick=()=>view(b.dataset.v));
+addEventListener('resize',()=>{cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();R.setSize(innerWidth,innerHeight);L2.setSize(innerWidth,innerHeight)});
+const start=(location.hash.slice(1) in TITLES)?location.hash.slice(1):'option_a';
+await load(start);view('eye');document.getElementById('load').remove();window.__ready=true;loop();
+['existing','option_a','option_b','option_c'].forEach(n=>{if(!cache[n])gl.loadAsync(n+'.glb').then(g=>{if(!cache[n]){prep(g.scene);cache[n]=g.scene}})});
+window.__api={load,view,setWalk,cam};
+</script></body></html>
