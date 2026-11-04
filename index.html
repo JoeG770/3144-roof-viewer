@@ -29,7 +29,7 @@ button:hover{background:#faf7f2}
 #joy{position:absolute;left:24px;bottom:84px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.35);border:2px solid rgba(255,255,255,.8);display:none;z-index:6;touch-action:none}
 #knob{position:absolute;left:35px;top:35px;width:50px;height:50px;border-radius:50%;background:rgba(47,93,138,.85)}
 #look{position:absolute;right:12px;top:12px;color:var(--ink);font-size:12px;background:rgba(255,253,249,.9);padding:5px 8px;border-radius:8px;display:none;z-index:5}
-#load{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--mute);z-index:9;background:#e8e4dd;letter-spacing:.04em}
+#load{position:absolute;inset:0;display:flex;align-items:flex-end;justify-content:center;font-size:14px;color:#222;z-index:9;background:#e8e4dd;letter-spacing:.02em}#poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}#lbox{position:relative;margin:0 12px 16px;padding:10px 14px;background:rgba(255,255,255,.92);border-radius:10px;max-width:92%;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,.15)}#lbar{height:4px;background:#ddd;border-radius:2px;margin-top:6px;overflow:hidden}#lbar i{display:block;height:100%;width:5%;background:#5a3fa0;transition:width .2s}
 #build{position:absolute;left:12px;top:12px;z-index:5;background:rgba(255,253,249,.96);border:1px solid var(--line);border-radius:12px;padding:10px;box-shadow:var(--sh);max-width:290px;font-size:12.5px}
 #build .st{display:flex;width:100%;margin:4px 0;padding:7px 10px}
 #build .st.on{background:var(--ink);color:#fff}
@@ -80,18 +80,18 @@ header{justify-content:flex-start;align-items:center}header small{display:none}
 <button id="howbtn">How it's built</button></div>
 <div id="title"></div>
 <div id="stage">
-<div id="load">Loading roof model…</div>
+<div id="load"><img id="poster" alt=""><div id="lbox"><span id="lstat">Loading roof model…</span><div id="lbar"><i></i></div></div></div><script>(function(){var h=location.hash.slice(1);if(!/^(existing|option_[abc])$/.test(h))h="option_a";var i=document.getElementById("poster");i.onerror=function(){i.remove()};i.src="posters/"+h+".jpg"})()</script>
 <div id="build" style="display:none"><b>How it's built (Option A platform)</b><div id="bsteps"></div><div id="bstep"></div>
 <div class="key"><span><i style="background:#e8590c"></i>Existing I-beams</span><span><i style="background:#1e6fff"></i>New steel</span><span><i style="background:#c0392b"></i>Posts</span></div></div>
 <button id="wtbtn" title="Show equipment weights">Weights</button><div id="wtsum"></div><button id="measbtn" title="Measure length or area"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17 17 3l4 4L7 21z"/><path d="M7 13l2 2M10 10l2 2M13 7l2 2"/></svg>Measure</button>
 <div id="meas"><div class="row"><button data-m="len" class="on">Length</button><button data-m="area">Area</button><button id="mdone">Close shape</button><button id="mclear">Clear</button></div><div id="mread">Tap two points to measure a length.</div></div>
 <div id="views" class="seg"><button data-v="eye"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><span class="t">Eye</span></button><button data-v="drone"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="5" r="2.5"/><circle cx="19" cy="5" r="2.5"/><circle cx="5" cy="19" r="2.5"/><circle cx="19" cy="19" r="2.5"/><rect x="9" y="9" width="6" height="6" rx="1"/><path d="M7 7l2 2M17 7l-2 2M7 17l2-2M17 17l-2-2"/></svg><span class="t">Drone</span></button><button data-v="plan"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 12h18M12 3v18"/></svg><span class="t">Plan</span></button><button id="walk"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="M10 21l2-6-3-3 1-5 4 3 3 1M8 13l-2 3"/></svg><span class="t">Walk</span></button></div>
-<div id="legend"><span><i style="background:#e8590c"></i>Existing I-beams</span><span><i style="background:#1e6fff"></i>New steel</span><span><i style="background:#1f5bd8"></i>Cold water</span><span><i style="background:#d62424"></i>150F hot</span><span><i style="background:#ff8a1f"></i>120F supply</span><span><i style="background:#7a3fc4"></i>Recirc return</span></div>
+<div id="legend"><span><i style="background:#e8590c"></i>Existing I-beams</span><span><i style="background:#1e6fff"></i>New steel</span><span><i style="background:#1f5bd8"></i>Cold water</span><span><i style="background:#d62424"></i>150F hot</span><span><i style="background:#ff8a1f"></i>120F supply</span><span><i style="background:#7a3fc4"></i>Recirc return</span><span><i style="background:#3fa65a"></i>HP glycol loop</span></div>
 <div id="joy"><div id="knob"></div></div><div id="look">Drag to look · WASD on keyboard</div>
 </div></div>
 <div class="panel" id="mp"><div class="ph"><span class="cap">Matterport: east equipment area</span><button id="mpreset">↺ Reset to location</button><button id="mpopen">Open full screen ↗</button></div><iframe id="mpf" loading="lazy" allow="xr-spatial-tracking; fullscreen" allowfullscreen></iframe></div>
 </div>
-<footer>Existing I-beam sizes to be field verified. Structural design by engineer of record. Not for construction.</footer>
+<footer>Existing I-beam sizes: EST from scan, EOR to verify (beam 2 ≈ S10x25.4, low confidence). Structural design by engineer of record. Not for construction.</footer>
 <div id="scrim"></div><script>(function(){
 const P=document.querySelector('.mpanel'),$=id=>document.getElementById(id)||main.querySelector('#'+id);
 const side=document.createElement('aside');side.id='side';const main=document.createElement('div');main.id='mainc';
@@ -110,22 +110,25 @@ const tog=o=>document.body.classList.toggle('drawer',o);$('navbtn').onclick=()=>
 side.addEventListener('click',e=>{if(e.target.closest('#opts button,#views button,#resetview,#measbtn,#wtbtn,#howbtn')&&innerWidth<=700)setTimeout(()=>tog(false),150)});
 })();</script>
 <script>window.MATTERPORT_URL='https://my.matterport.com/show/?m=ghpD7KxLhnx&play=1&ss=277&sr=-2.96,.81&qs=1';</script>
-<script type="importmap">{"imports":{"three":"./lib/three.module.js","three/addons/":"./lib/jsm/"}}</script>
-<script>(function(){function L(){return document.getElementById('load')||(window.$&&$('load'))}
-function fail(m){var l=L();if(!l||window.__ready||window.__failed)return;window.__failed=1;l.innerHTML='3D model could not start: '+m+'<br><button onclick="location.reload()" style="margin-top:8px;padding:6px 14px;border-radius:8px;border:1px solid #ccc;background:#fff;cursor:pointer">Retry</button>';l.style.pointerEvents='auto'}
+<script>(function(){function q(id){return document.getElementById(id)||(window.$&&$(id))}
+window.__stage='page loaded';window.__st=function(m,pct){window.__stage=m;var e=q('lstat');if(e&&!window.__failed)e.textContent=m;if(pct!=null){var b=q('lbar');if(b)b.firstChild.style.width=Math.max(5,Math.min(100,pct))+'%'}};
+function fail(m){var l=q('lbox');if(!l||window.__ready||window.__failed)return;window.__failed=1;l.innerHTML='<b>3D model could not start.</b><br>'+String(m).replace(/</g,'&lt;')+'<br><small>Last step: '+window.__stage+' · '+navigator.userAgent.replace(/</g,'')+'</small><br><button onclick="location.reload()" style="margin-top:8px;padding:6px 14px;border-radius:8px;border:1px solid #ccc;background:#fff;cursor:pointer">Retry</button>'}
 window.__fail=fail;
-addEventListener('error',function(e){if(e.message)fail(e.message)});
+addEventListener('error',function(e){var t=e.target;if(t&&t.tagName==='SCRIPT')fail('Could not load script '+(t.src||'(module)'));else if(e.message)fail(e.message+(e.filename?' ('+e.filename.split('/').pop()+':'+e.lineno+')':''))},true);
 addEventListener('unhandledrejection',function(e){fail((e.reason&&e.reason.message)||String(e.reason))});
-setTimeout(function(){fail('timed out. Check that hardware acceleration / WebGL is on in your browser, then retry.')},60000)})();</script>
+setTimeout(function(){if(!window.__modStarted)fail('The 3D code never started (browser may be too old or a script was blocked).')},15000);
+setTimeout(function(){fail('Timed out after 45 s.')},45000)})();</script>
+
 <script type="module">
-import * as THREE from 'three';
-import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
-import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
-import {DRACOLoader} from 'three/addons/loaders/DRACOLoader.js';
-import {Sky} from 'three/addons/objects/Sky.js';
-import {CSS2DRenderer,CSS2DObject} from 'three/addons/renderers/CSS2DRenderer.js';
-import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
-const TITLES={existing:'Existing roof as built, with the two existing I-beams at the east condensers.',option_a:'Option A · Four Chiltrix CX65 heat pumps and two 700 gal tanks on new dunnage.',option_b:'Option B · Two Mitsubishi QAHV-N136 heat pumps with storage tanks.',option_c:'Option C · Hybrid: one QAHV-N136 heats Tank 1 to 150F, two CX65 carry recirc on Tank 2 (120/110F), a mixing valve tempers 150F to 120F.'};
+import * as THREE from './lib/three.module.js';
+import {OrbitControls} from './v7_OrbitControls.js';
+import {GLTFLoader} from './v7_GLTFLoader.js';
+import {DRACOLoader} from './v7_DRACOLoader.js';
+import {Sky} from './v7_Sky.js';
+import {CSS2DRenderer,CSS2DObject} from './v7_CSS2DRenderer.js';
+import {RoomEnvironment} from './v7_RoomEnvironment.js';
+window.__modStarted=1;window.__st('Starting 3D…',10);
+const TITLES={existing:'Existing roof as built, with the two existing I-beams at the east condensers.',option_a:'Option A · Four Chiltrix CX65 heat pumps and two 700 gal tanks on new dunnage.',option_b:'Option B · Two Mitsubishi QAHV-N136 heat pumps with storage tanks.',option_c:'Option C · Hybrid: one QAHV-N136 (faces the tanks) heats Tank 1 to 150F; dashed box = space for a future 2nd QAHV. Two CX65s side by side, discharging south to open air, run on their own closed glycol loop (green) through the Tank 2 coil; the building recirc return also passes through Tank 2. A mixing valve tempers 150F to 120F.'};
 const mobile=matchMedia('(pointer:coarse)').matches;
 const stage=document.getElementById('stage');const W=()=>stage.clientWidth,H=()=>stage.clientHeight;
 let R;try{R=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true})}catch(e){try{R=new THREE.WebGLRenderer({antialias:false,powerPreference:'default'})}catch(e2){window.__fail('this browser has WebGL turned off or unavailable. Turn on hardware acceleration (Chrome: Settings > System) and retry.');throw e2}}
@@ -166,7 +169,7 @@ function prep(root){const lb=[];root.traverse(o=>{if(o.isMesh){const mn=o.materi
  lb.forEach(l=>root.add(l));
  // world-ish UV fix for deck: rely on Blender UV (world/3.25)
 }
-async function load(name){if(!cache[name]){const g=await gl.loadAsync(name+'.glb?v=6');prep(g.scene);cache[name]=g.scene;walkTargets.length=0}
+async function load(name){if(!cache[name]){const g=await (window.__st('Downloading model…',15),gl.loadAsync(name+'.glb?v=8',x=>{if(!window.__ready&&x.total)window.__st('Downloading model… '+Math.round(x.loaded/x.total*100)+'%',15+80*x.loaded/x.total)}));prep(g.scene);cache[name]=g.scene;walkTargets.length=0}
  for(const k in cache)cache[k].traverse(o=>{if(o.isCSS2DObject)o.element.style.display=k===name?'':'none'});
  if(cur)S.remove(cur);cur=cache[name];S.add(cur);curName=name;
  document.querySelectorAll('#opts button').forEach(b=>b.classList.toggle('on',b.dataset.o===name));document.getElementById('title').textContent=TITLES[name];
@@ -202,8 +205,8 @@ function loop(){requestAnimationFrame(loop);const dt=Math.min(clk.getDelta(),0.1
 document.querySelectorAll('#views button[data-v]').forEach(b=>b.onclick=()=>view(b.dataset.v));
 const rs=()=>{cam.aspect=W()/H();cam.updateProjectionMatrix();R.setSize(W(),H());L2.setSize(W(),H())};addEventListener('resize',rs);new ResizeObserver(rs).observe(stage);
 const start=(location.hash.slice(1) in TITLES)?location.hash.slice(1):'option_a';
-await load(start);view('eye');document.getElementById('load').remove();window.__ready=true;loop();
-const idle=window.requestIdleCallback||(f=>setTimeout(f,1500));const pre=['existing','option_a','option_b','option_c'].filter(n=>n!==start);const next=()=>{const n=pre.shift();if(!n)return;if(cache[n])return idle(next);gl.loadAsync(n+'.glb?v=6').then(g=>{if(!cache[n]){prep(g.scene);beamify(g.scene);cache[n]=g.scene}}).catch(()=>{}).finally(()=>idle(next))};idle(next);
+await load(start);window.__st('Preparing scene…',97);view('eye');{const l=document.getElementById('load')||$('load');l&&l.remove()}window.__ready=true;loop();
+const idle=window.requestIdleCallback||(f=>setTimeout(f,1500));const pre=['existing','option_a','option_b','option_c'].filter(n=>n!==start);const next=()=>{const n=pre.shift();if(!n)return;if(cache[n])return idle(next);gl.loadAsync(n+'.glb?v=8').then(g=>{if(!cache[n]){prep(g.scene);beamify(g.scene);cache[n]=g.scene}}).catch(()=>{}).finally(()=>idle(next))};idle(next);
 
 // ---------- Existing I-beam: safety orange, labeled, visible in every view ----------
 const ORANGE=new THREE.MeshStandardMaterial({color:0xff6a00,emissive:0xff4400,emissiveIntensity:0.55,roughness:0.5,metalness:0.1});
@@ -213,7 +216,7 @@ function beamify(root){if(root.userData.beam)return;root.userData.beam=1;root.us
   root.traverse(o=>{if(o.isMesh&&new RegExp('^EXIST_I-beam_'+k).test(o.name)){o.material=ORANGE;bb.expandByObject(o);n++}});
   if(!n)continue;const sz=new THREE.Vector3(),c=new THREE.Vector3();bb.getSize(sz);bb.getCenter(c);
   const g=new THREE.Mesh(new THREE.BoxGeometry(sz.x,Math.max(sz.y,0.4),Math.max(sz.z,0.4)),GHOST);g.position.copy(c);g.renderOrder=999;g.name='beam_xray';root.add(g);
-  const d=document.createElement('div');d.className='lbl beam';d.textContent=`EXISTING I-BEAM ${k} (size TBV) · E-W, ${sz.x.toFixed(1)} ft`;const l=new CSS2DObject(d);l.position.set(c.x+(k===1?-3:3),bb.max.y+(k===1?1.2:2.6),c.z);root.add(l);root.userData.beams.push({k,bb})}
+  const d=document.createElement('div');d.className='lbl beam';d.textContent=`EXISTING I-BEAM ${k} · ${k===2?'≈S10x25.4':'size not resolvable, assumed = beam 2'} · EST from scan, EOR to verify`;const l=new CSS2DObject(d);l.position.set(c.x+(k===1?-3:3),bb.max.y+(k===1?1.2:2.6),c.z);root.add(l);root.userData.beams.push({k,bb})}
  root.userData.beamBox=root.userData.beams[0]&&root.userData.beams[0].bb}
 for(const k in cache)beamify(cache[k]);
 const _load=load;async function load2(n){await _load(n);beamify(cache[n]);for(const k in cache)cache[k].traverse(o=>{if(o.isCSS2DObject)o.element.style.display=k===n?'':'none'});if(n!=='option_a'&&building)setBuild(false)}
