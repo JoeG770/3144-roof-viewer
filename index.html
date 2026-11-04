@@ -128,7 +128,7 @@ import {Sky} from './v7_Sky.js';
 import {CSS2DRenderer,CSS2DObject} from './v7_CSS2DRenderer.js';
 import {RoomEnvironment} from './v7_RoomEnvironment.js';
 window.__modStarted=1;window.__st('Starting 3D…',10);
-const TITLES={existing:'Existing roof as built, with the two existing I-beams at the east condensers.',option_c:'Option C · Hybrid, compact L-shaped platform (96 sf). Two CX65s sit side by side behind the tanks, facing north (40 in front zone up to the tanks). One QAHV-N136 sits in the south bay facing north (3 ft 4 in front, 4 ft 6 in rear air space over open roof) and heats Tank 1 to 150F. A steel stair (6 risers at 6½ in, 5 treads at 11 in, 3 ft 4 in wide, two handrails and 42 in guards) comes down from a small landing on the east edge of the QAHV bay, clear of the FDNY strip. The CX65s run on their own closed glycol loop (green) through the Tank 2 coil; the building recirc return also passes through Tank 2. A mixing valve tempers 150F to 120F.'};
+const TITLES={existing:'Existing roof as built, with the two existing I-beams at the east condensers.',option_c:'Option C · Hybrid, compact L-shaped platform (96 sf). Two CX65s sit side by side behind the tanks, facing north (40 in front zone up to the tanks). One QAHV-N136 sits in the south bay facing north (3 ft 4 in front, 4 ft 6 in rear air space over open roof) and heats Tank 1 to 150F. A steel service stair (6 risers at about 8 in, 5 treads at 9½ in, 2 ft 8 in wide, handrails both sides and 42 in stair rails) comes straight down to the east off the QAHV front aisle and stops just west of the FDNY strip. The CX65s run on their own closed glycol loop (green) through the Tank 2 coil; the building recirc return also passes through Tank 2. A mixing valve tempers 150F to 120F.'};
 const mobile=matchMedia('(pointer:coarse)').matches;
 const stage=document.getElementById('stage');const W=()=>stage.clientWidth,H=()=>stage.clientHeight;
 let R;try{R=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true})}catch(e){try{R=new THREE.WebGLRenderer({antialias:false,powerPreference:'default'})}catch(e2){window.__fail('this browser has WebGL turned off or unavailable. Turn on hardware acceleration (Chrome: Settings > System) and retry.');throw e2}}
@@ -169,7 +169,7 @@ function prep(root){const lb=[];root.traverse(o=>{if(o.isMesh){const mn=o.materi
  lb.forEach(l=>root.add(l));
  // world-ish UV fix for deck: rely on Blender UV (world/3.25)
 }
-async function load(name){if(!cache[name]){const g=await (window.__st('Downloading model…',15),gl.loadAsync(name+'.glb?v=12',x=>{if(!window.__ready&&x.total)window.__st('Downloading model… '+Math.round(x.loaded/x.total*100)+'%',15+80*x.loaded/x.total)}));prep(g.scene);cache[name]=g.scene;walkTargets.length=0}
+async function load(name){if(!cache[name]){const g=await (window.__st('Downloading model…',15),gl.loadAsync(name+'.glb?v=13',x=>{if(!window.__ready&&x.total)window.__st('Downloading model… '+Math.round(x.loaded/x.total*100)+'%',15+80*x.loaded/x.total)}));prep(g.scene);cache[name]=g.scene;walkTargets.length=0}
  for(const k in cache)cache[k].traverse(o=>{if(o.isCSS2DObject)o.element.style.display=k===name?'':'none'});
  if(cur)S.remove(cur);cur=cache[name];S.add(cur);curName=name;
  document.querySelectorAll('#opts button').forEach(b=>b.classList.toggle('on',b.dataset.o===name));document.getElementById('title').textContent=TITLES[name];
@@ -206,7 +206,7 @@ document.querySelectorAll('#views button[data-v]').forEach(b=>b.onclick=()=>view
 const rs=()=>{cam.aspect=W()/H();cam.updateProjectionMatrix();R.setSize(W(),H());L2.setSize(W(),H())};addEventListener('resize',rs);new ResizeObserver(rs).observe(stage);
 const start=(location.hash.slice(1) in TITLES)?location.hash.slice(1):'option_c';
 await load(start);window.__st('Preparing scene…',97);view('eye');{const l=document.getElementById('load')||$('load');l&&l.remove()}window.__ready=true;loop();
-const idle=window.requestIdleCallback||(f=>setTimeout(f,1500));const pre=['existing','option_c'].filter(n=>n!==start);const next=()=>{const n=pre.shift();if(!n)return;if(cache[n])return idle(next);gl.loadAsync(n+'.glb?v=12').then(g=>{if(!cache[n]){prep(g.scene);beamify(g.scene);cache[n]=g.scene}}).catch(()=>{}).finally(()=>idle(next))};idle(next);
+const idle=window.requestIdleCallback||(f=>setTimeout(f,1500));const pre=['existing','option_c'].filter(n=>n!==start);const next=()=>{const n=pre.shift();if(!n)return;if(cache[n])return idle(next);gl.loadAsync(n+'.glb?v=13').then(g=>{if(!cache[n]){prep(g.scene);beamify(g.scene);cache[n]=g.scene}}).catch(()=>{}).finally(()=>idle(next))};idle(next);
 
 // ---------- Existing I-beam: safety orange, labeled, visible in every view ----------
 const ORANGE=new THREE.MeshStandardMaterial({color:0xff6a00,emissive:0xff4400,emissiveIntensity:0.55,roughness:0.5,metalness:0.1});
@@ -285,7 +285,7 @@ window.__meas={pick:mPick,close:closeShape,clear:mClear};
 
 // ---------- Equipment weights (dry / operating). Sources: roofmodel/out/weights.json; EST = estimated ----------
 const WT=[[/^tank\.?\d*$|^C_tank/,'700 gal tank · 204 lb dry / 6,046 lb full',0],[/^CX65\.?\d*$|^C_CX65/,'CX65 · 336 lb dry / ~346 lb op (water EST)',1],[/^QAHV\.?\d*$|^C_QAHV/,'QAHV-N136 · 895 lb dry / ~915 lb op (water EST)',1],[/^swing_tank$/,'Swing tank · EST 150 lb dry / 817 lb full (size TBD)',1],[/^C_TMV/,'Mixing valve · EST 40 / 50 lb',1]];
-const WSUM={"option_c": {"dry": 4793, "op": 16527, "b1": 7136, "b2": 6390, "p": 3001, "area": 96, "util": 0.58}};let wtOn=false;
+const WSUM={"option_c": {"dry": 4473, "op": 16207, "b1": 7136, "b2": 6390, "p": 2681, "area": 96, "util": 0.58}};let wtOn=false;
 function wtify(root){if(root.userData.wt)return;root.userData.wt=1;let nW=0;const done=new Set();
  root.traverse(o=>{if(done.has(o))return;const m=WT.find(w=>w[0].test(o.name));if(!m)return;o.traverse(x=>done.add(x));
   const bb=new THREE.Box3().setFromObject(o);if(bb.isEmpty())return;const c=new THREE.Vector3();bb.getCenter(c);
