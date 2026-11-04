@@ -2,45 +2,61 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <link rel="icon" href="favicon.svg" type="image/svg+xml"><title>3144 Third Ave Roof Viewer</title>
 <style>
-html,body{margin:0;background:#e9edf2;font-family:-apple-system,Segoe UI,Roboto,sans-serif}
-.panel{margin:10px;border:3px solid #223;border-radius:14px;overflow:hidden;background:#cfd8e3;box-shadow:0 3px 12px rgba(0,0,0,.25)}
-.ph{background:#223;color:#fff;font-size:15px;font-weight:800;padding:8px 12px;display:flex;gap:8px;align-items:center}.ph span{flex:1}.ph button{padding:6px 10px;font-size:13px}
-#stage{position:relative;height:72vh;min-height:360px;touch-action:none;overflow:hidden}
+:root{--bg:#f4f1ec;--ink:#24211d;--mute:#7a7268;--line:#e2dcd2;--card:#fffdf9;--acc:#2f5d8a;--or:#e8590c;--sh:0 1px 2px rgba(40,30,20,.06),0 8px 28px rgba(40,30,20,.08)}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+header{max-width:1440px;margin:0 auto;padding:22px 24px 6px;display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+header h1{margin:0;font-size:22px;font-weight:650;letter-spacing:-.01em}header small{color:var(--mute);font-size:13px;letter-spacing:.04em;text-transform:uppercase}
+.panel{max-width:1440px;margin:14px auto;background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:var(--sh)}
+.wrap{padding:0 24px}
+.ph{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:12px 16px;border-bottom:1px solid var(--line)}
+.ph .cap{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--mute);flex:1;min-width:160px}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:10px;padding:8px 13px;font-size:13px;font-weight:550;display:inline-flex;gap:6px;align-items:center;transition:background .15s,color .15s,box-shadow .15s}
+button:hover{background:#faf7f2}
+.seg{display:inline-flex;background:#efeae2;border-radius:11px;padding:3px;gap:2px}
+.seg button{border:0;background:transparent;border-radius:8px;padding:7px 16px;font-size:13.5px;color:#4b453e}
+.seg button.on{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+#title{font-size:13.5px;color:#4b453e;padding:10px 16px;border-bottom:1px solid var(--line);background:#fbf9f5;line-height:1.4}
+#stage{position:relative;height:70vh;min-height:380px;touch-action:none;overflow:hidden;background:#e8e4dd}
 #c{position:absolute;inset:0;display:block}
-#mpf{display:block;width:100%;height:72vh;min-height:360px;border:0;background:#111}
-.bar{position:absolute;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:5}
-#opts{top:10px}#views{bottom:12px}
-button{border:0;border-radius:12px;padding:12px 16px;font-size:16px;font-weight:700;background:rgba(255,255,255,.85);color:#222;box-shadow:0 2px 8px rgba(0,0,0,.2);cursor:pointer}
-button.on{background:#1f5fbf;color:#fff}
-#opts button{min-width:64px;font-size:18px}
-#title{position:absolute;left:10px;top:66px;font-size:13px;color:#223;background:rgba(255,255,255,.7);padding:6px 9px;border-radius:8px;z-index:5;max-width:60vw}
-.lbl{background:rgba(20,30,50,.8);color:#fff;font-size:12px;padding:3px 7px;border-radius:6px;white-space:nowrap;pointer-events:none}
+#mpf{display:block;width:100%;height:70vh;min-height:380px;border:0;background:#1b1a18}
+#views{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);z-index:5;background:rgba(255,253,249,.92);backdrop-filter:blur(6px);box-shadow:var(--sh)}
+#views button.on{background:var(--ink);color:#fff}
+#legend{position:absolute;right:12px;bottom:14px;z-index:5;background:rgba(255,253,249,.92);backdrop-filter:blur(6px);border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:11.5px;color:#4b453e;box-shadow:var(--sh);display:grid;grid-template-columns:auto auto;gap:4px 12px}
+#legend i{display:inline-block;width:14px;height:4px;border-radius:2px;margin-right:6px;vertical-align:middle}
+.lbl{background:rgba(36,33,29,.78);color:#fff;font-size:11px;font-weight:500;padding:2px 7px;border-radius:5px;white-space:nowrap;pointer-events:none}
+.lbl.beam{background:var(--or);font-weight:650;font-size:11.5px}
+.lbl.post{background:#a33a2c;font-size:10.5px}
 #joy{position:absolute;left:24px;bottom:84px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.35);border:2px solid rgba(255,255,255,.8);display:none;z-index:6;touch-action:none}
-#knob{position:absolute;left:35px;top:35px;width:50px;height:50px;border-radius:50%;background:rgba(31,95,191,.85)}
-#look{position:absolute;right:10px;bottom:84px;color:#223;font-size:12px;background:rgba(255,255,255,.7);padding:5px 8px;border-radius:8px;display:none;z-index:5}
-#load{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:20px;color:#223;z-index:9;background:#cfd8e3}
-#build{position:absolute;left:10px;top:104px;z-index:5;background:rgba(255,255,255,.92);border-radius:12px;padding:8px;box-shadow:0 2px 8px rgba(0,0,0,.2);max-width:300px;font-size:13px;color:#223}
-#build .st{display:block;width:100%;text-align:left;margin:4px 0;padding:8px 10px;font-size:14px}
-#build .key{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}#build .key i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:4px;vertical-align:-1px}
-#bstep{margin:6px 2px;font-size:13px;line-height:1.35}
-#howbtn{position:absolute;right:10px;top:10px;z-index:6;font-size:15px}
-#howbtn.on{background:#ff6a00;color:#fff}
-.lbl.beam{background:#ff6a00;color:#fff;font-weight:800;font-size:13px;border:2px solid #fff}
-.lbl.post{background:#c0392b;font-size:11px}
-@media (max-width:700px){.panel{margin:6px}#stage,#mpf{height:62vh}#build{top:auto;bottom:70px;max-width:none;left:6px;right:6px}#howbtn{top:auto;bottom:66px;right:6px;display:none}}
+#knob{position:absolute;left:35px;top:35px;width:50px;height:50px;border-radius:50%;background:rgba(47,93,138,.85)}
+#look{position:absolute;right:12px;top:12px;color:var(--ink);font-size:12px;background:rgba(255,253,249,.9);padding:5px 8px;border-radius:8px;display:none;z-index:5}
+#load{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--mute);z-index:9;background:#e8e4dd;letter-spacing:.04em}
+#build{position:absolute;left:12px;top:12px;z-index:5;background:rgba(255,253,249,.96);border:1px solid var(--line);border-radius:12px;padding:10px;box-shadow:var(--sh);max-width:290px;font-size:12.5px}
+#build .st{display:flex;width:100%;margin:4px 0;padding:7px 10px}
+#build .st.on{background:var(--ink);color:#fff}
+#build .key{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px;color:var(--mute)}#build .key i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px}
+#bstep{margin:6px 2px;line-height:1.4}
+#howbtn.on{background:var(--or);color:#fff;border-color:var(--or)}
+footer{max-width:1440px;margin:0 auto 24px;padding:0 24px;color:var(--mute);font-size:11.5px}
+@media (max-width:700px){.lbl:not(.beam){display:none}.lbl.beam{font-size:10px}header{padding:14px 12px 0}header h1{font-size:18px}.wrap{padding:0 8px}.panel{margin:10px auto;border-radius:12px}.ph{padding:10px}.seg button{padding:7px 11px}#stage,#mpf{height:60vh;min-height:320px}#legend{display:none}#build{left:8px;right:8px;max-width:none;top:auto;bottom:64px}#views button .t{display:none}}
 </style></head><body>
-<div class="panel"><div class="ph"><span>3D MODEL · 3144 Third Ave roof</span></div><div id="stage">
-<div id="load">Loading roof model…</div>
-<div id="opts" class="bar"><button data-o="existing">Existing</button><button data-o="option_a">A</button><button data-o="option_b">B</button><button data-o="option_c">C</button></div>
+<header><h1>3144 Third Ave — Roof DHW Options</h1><small>Bronx, NY · Owner coordination model</small></header>
+<div class="wrap">
+<div class="panel"><div class="ph"><span class="cap">3D model</span>
+<div id="opts" class="seg"><button data-o="existing">Existing</button><button data-o="option_a">A</button><button data-o="option_b">B</button><button data-o="option_c">C</button></div>
+<button id="howbtn">How it's built</button></div>
 <div id="title"></div>
-<button id="howbtn">How it's built</button>
+<div id="stage">
+<div id="load">Loading roof model…</div>
 <div id="build" style="display:none"><b>How it's built (Option A platform)</b><div id="bsteps"></div><div id="bstep"></div>
-<div class="key"><span><i style="background:#ff6a00"></i>Existing I-beams 1 + 2</span><span><i style="background:#1e6fff"></i>New dunnage steel</span><span><i style="background:#c0392b"></i>New posts / bearing points</span></div></div>
-<div id="views" class="bar"><button data-v="eye">Eye</button><button data-v="drone">Drone</button><button data-v="plan">Plan</button><button id="walk">Walk</button></div>
-<div id="joy"><div id="knob"></div></div><div id="look">Drag right side to look · WASD on keyboard</div>
+<div class="key"><span><i style="background:#e8590c"></i>Existing I-beams</span><span><i style="background:#1e6fff"></i>New steel</span><span><i style="background:#c0392b"></i>Posts</span></div></div>
+<div id="views" class="seg"><button data-v="eye"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><span class="t">Eye</span></button><button data-v="drone"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="5" r="2.5"/><circle cx="19" cy="5" r="2.5"/><circle cx="5" cy="19" r="2.5"/><circle cx="19" cy="19" r="2.5"/><rect x="9" y="9" width="6" height="6" rx="1"/><path d="M7 7l2 2M17 7l-2 2M7 17l2-2M17 17l-2-2"/></svg><span class="t">Drone</span></button><button data-v="plan"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 12h18M12 3v18"/></svg><span class="t">Plan</span></button><button id="walk"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="M10 21l2-6-3-3 1-5 4 3 3 1M8 13l-2 3"/></svg><span class="t">Walk</span></button></div>
+<div id="legend"><span><i style="background:#e8590c"></i>Existing I-beams</span><span><i style="background:#1e6fff"></i>New steel</span><span><i style="background:#1f5bd8"></i>Cold water</span><span><i style="background:#d62424"></i>150F hot</span><span><i style="background:#ff8a1f"></i>120F supply</span><span><i style="background:#7a3fc4"></i>Recirc return</span></div>
+<div id="joy"><div id="knob"></div></div><div id="look">Drag to look · WASD on keyboard</div>
 </div></div>
-<div class="panel" id="mp"><div class="ph"><span>MATTERPORT SCAN · real roof (starts at east-end condensers)</span><button id="mpopen">Open full screen ↗</button></div><iframe id="mpf" allow="xr-spatial-tracking; fullscreen" allowfullscreen></iframe></div>
-<script>window.MATTERPORT_URL='https://my.matterport.com/show/?m=ghpD7KxLhnx&ss=277&sr=-2.96,.81&qs=1';</script>
+<div class="panel" id="mp"><div class="ph"><span class="cap">Matterport: east equipment area</span><button id="mpreset">↺ Reset to location</button><button id="mpopen">Open full screen ↗</button></div><iframe id="mpf" allow="xr-spatial-tracking; fullscreen" allowfullscreen></iframe></div>
+</div>
+<footer>Existing I-beam sizes to be field verified. Structural design by engineer of record. Not for construction.</footer>
+<script>window.MATTERPORT_URL='https://my.matterport.com/show/?m=ghpD7KxLhnx&play=1&ss=277&sr=-2.96,.81&qs=1';</script>
 <script type="importmap">{"imports":{"three":"./lib/three.module.js","three/addons/":"./lib/jsm/"}}</script>
 <script type="module">
 import * as THREE from 'three';
@@ -50,14 +66,14 @@ import {DRACOLoader} from 'three/addons/loaders/DRACOLoader.js';
 import {Sky} from 'three/addons/objects/Sky.js';
 import {CSS2DRenderer,CSS2DObject} from 'three/addons/renderers/CSS2DRenderer.js';
 import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
-const TITLES={existing:'EXISTING roof (as-built)',option_a:'OPTION A: 4 Chiltrix CX65 + 2 x 700 gal tanks on dunnage',option_b:'OPTION B: 2 Mitsubishi QAHV-N136 + tanks',option_c:'OPTION C: Hybrid (G. Schultz): 1 QAHV-N136 > Tank 1 150F, 2 CX65 > Tank 2 recirc 120/110F, mixing valve 150>120F'};
+const TITLES={existing:'Existing roof as built, with the two existing I-beams at the east condensers.',option_a:'Option A · Four Chiltrix CX65 heat pumps and two 700 gal tanks on new dunnage.',option_b:'Option B · Two Mitsubishi QAHV-N136 heat pumps with storage tanks.',option_c:'Option C · Hybrid: one QAHV-N136 heats Tank 1 to 150F, two CX65 carry recirc on Tank 2 (120/110F), a mixing valve tempers 150F to 120F.'};
 const mobile=matchMedia('(pointer:coarse)').matches;
 const stage=document.getElementById('stage');const W=()=>stage.clientWidth,H=()=>stage.clientHeight;
 const R=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});
 R.setPixelRatio(Math.min(devicePixelRatio,mobile?1.5:2));R.setSize(stage.clientWidth,stage.clientHeight);
 R.toneMapping=THREE.ACESFilmicToneMapping;R.toneMappingExposure=0.5;R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;
 R.domElement.id='c';stage.appendChild(R.domElement);
-const L2=new CSS2DRenderer();L2.setSize(W(),H());Object.assign(L2.domElement.style,{position:'fixed',top:0,left:0,pointerEvents:'none'});stage.appendChild(L2.domElement);
+const L2=new CSS2DRenderer();L2.setSize(W(),H());Object.assign(L2.domElement.style,{position:'absolute',top:0,left:0,pointerEvents:'none',overflow:'hidden'});stage.appendChild(L2.domElement);
 const S=new THREE.Scene();
 const cam=new THREE.PerspectiveCamera(60,W()/H(),0.3,3000);
 // sky + warm low sun (matches Blender SUN: warm 1.0/.66/.40)
@@ -83,7 +99,7 @@ function fixMat(o){const m=o.material;if(!m||m.userData.fixed)return;m.userData.
  m.needsUpdate=true}
 const dl=new DRACOLoader().setDecoderPath('./lib/draco/');const gl=new GLTFLoader().setDRACOLoader(dl);
 const cache={};let cur=null,curName='';const labels=[];
-const LBL=[[/^tank(\.\d+)?$/,'700 gal tank'],[/^CX65(\.\d+)?$/,'CX65 heat pump'],[/^QAHV(\.\d+)?$/,'QAHV heat pump'],[/^swing_tank$/,'Swing tank'],[/^C_QAHV/,'QAHV-N136 heat pump (150F)'],[/^C_CX65_1/,'CX65 #1'],[/^C_CX65_2/,'CX65 #2'],[/^C_tank1/,'Tank 1 · 700 gal · 150F'],[/^C_tank2/,'Tank 2 · 700 gal · recirc 120F'],[/^C_TMV/,'Mixing valve 150F→120F'],[/^pipe_CW_mains_1$/,'CW cold (blue)'],[/^pipe_150F_to_TMV_1$/,'150F (red)'],[/^pipe_120F_supply_to_bldg_2$/,'120F supply (orange)'],[/^pipe_recirc_return_from_bldg_1$/,'Recirc return 110F (purple)']];
+const LBL=[[/^tank(\.\d+)?$/,'700 gal tank'],[/^CX65(\.\d+)?$/,'CX65 heat pump'],[/^QAHV(\.\d+)?$/,'QAHV heat pump'],[/^swing_tank$/,'Swing tank'],[/^C_QAHV/,'QAHV-N136'],[/^C_CX65_1/,'CX65 #1'],[/^C_CX65_2/,'CX65 #2'],[/^C_tank1/,'Tank 1 · 150F'],[/^C_tank2/,'Tank 2 · recirc'],[/^C_TMV/,'Mixing valve']];
 function boxUV(o,sz){const g=o.geometry;if(g.userData.buv)return;g.userData.buv=1;o.updateWorldMatrix(true,false);const p=g.attributes.position,n=g.attributes.normal,v=new THREE.Vector3(),w=new THREE.Vector3(),uv=new Float32Array(p.count*2);const nm=new THREE.Matrix3().getNormalMatrix(o.matrixWorld);
  for(let i=0;i<p.count;i++){v.fromBufferAttribute(p,i).applyMatrix4(o.matrixWorld);w.fromBufferAttribute(n,i).applyMatrix3(nm);const ax=Math.abs(w.x),ay=Math.abs(w.y),az=Math.abs(w.z);let a,b;if(ay>=ax&&ay>=az){a=v.x;b=v.z}else if(ax>=az){a=v.z;b=v.y}else{a=v.x;b=v.y}uv[2*i]=a/sz;uv[2*i+1]=b/sz}g.setAttribute('uv',new THREE.BufferAttribute(uv,2))}
 function prep(root){const lb=[];root.traverse(o=>{if(o.isMesh){const mn=o.material&&o.material.name;if(mn==='EXIST_brick')boxUV(o,2.67);if(mn==='EXIST_roofing'&&!o.geometry.attributes.uv)boxUV(o,3.25);o.castShadow=o.receiveShadow=true;(Array.isArray(o.material)?o.material:[o.material]).forEach(m=>fixMat({material:m}))}
@@ -172,7 +188,7 @@ document.getElementById('howbtn').onclick=()=>setBuild(!building);
 // ---------- Matterport panel (stacked under the 3D model) ----------
 const MP=new URLSearchParams(location.search).get('mp')||window.MATTERPORT_URL||'';
 const mp=document.getElementById('mp'),mpf=document.getElementById('mpf');
-mpf.src=MP;document.getElementById('mpopen').onclick=()=>window.open(MP,'_blank');
+mpf.src=MP;document.getElementById('mpreset').onclick=()=>{mpf.src='about:blank';setTimeout(()=>mpf.src=MP,60)};document.getElementById('mpopen').onclick=()=>window.open(MP,'_blank');
 function setMP(on){if(on)mp.scrollIntoView({behavior:'instant',block:'start'})}
 window.__api={load:load2,view,setWalk,cam,setBuild,setStep,setMP};
 </script></body></html>
