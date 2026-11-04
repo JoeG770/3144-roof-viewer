@@ -111,6 +111,12 @@ side.addEventListener('click',e=>{if(e.target.closest('#opts button,#views butto
 })();</script>
 <script>window.MATTERPORT_URL='https://my.matterport.com/show/?m=ghpD7KxLhnx&play=1&ss=277&sr=-2.96,.81&qs=1';</script>
 <script type="importmap">{"imports":{"three":"./lib/three.module.js","three/addons/":"./lib/jsm/"}}</script>
+<script>(function(){function L(){return document.getElementById('load')||(window.$&&$('load'))}
+function fail(m){var l=L();if(!l||window.__ready||window.__failed)return;window.__failed=1;l.innerHTML='3D model could not start: '+m+'<br><button onclick="location.reload()" style="margin-top:8px;padding:6px 14px;border-radius:8px;border:1px solid #ccc;background:#fff;cursor:pointer">Retry</button>';l.style.pointerEvents='auto'}
+window.__fail=fail;
+addEventListener('error',function(e){if(e.message)fail(e.message)});
+addEventListener('unhandledrejection',function(e){fail((e.reason&&e.reason.message)||String(e.reason))});
+setTimeout(function(){fail('timed out. Check that hardware acceleration / WebGL is on in your browser, then retry.')},60000)})();</script>
 <script type="module">
 import * as THREE from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
@@ -122,7 +128,7 @@ import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
 const TITLES={existing:'Existing roof as built, with the two existing I-beams at the east condensers.',option_a:'Option A · Four Chiltrix CX65 heat pumps and two 700 gal tanks on new dunnage.',option_b:'Option B · Two Mitsubishi QAHV-N136 heat pumps with storage tanks.',option_c:'Option C · Hybrid: one QAHV-N136 heats Tank 1 to 150F, two CX65 carry recirc on Tank 2 (120/110F), a mixing valve tempers 150F to 120F.'};
 const mobile=matchMedia('(pointer:coarse)').matches;
 const stage=document.getElementById('stage');const W=()=>stage.clientWidth,H=()=>stage.clientHeight;
-const R=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});
+let R;try{R=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true})}catch(e){try{R=new THREE.WebGLRenderer({antialias:false,powerPreference:'default'})}catch(e2){window.__fail('this browser has WebGL turned off or unavailable. Turn on hardware acceleration (Chrome: Settings > System) and retry.');throw e2}}
 R.setPixelRatio(Math.min(devicePixelRatio,mobile?1.5:2));R.setSize(stage.clientWidth,stage.clientHeight);
 R.toneMapping=THREE.ACESFilmicToneMapping;R.toneMappingExposure=0.5;R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;
 R.domElement.id='c';stage.appendChild(R.domElement);
@@ -160,7 +166,7 @@ function prep(root){const lb=[];root.traverse(o=>{if(o.isMesh){const mn=o.materi
  lb.forEach(l=>root.add(l));
  // world-ish UV fix for deck: rely on Blender UV (world/3.25)
 }
-async function load(name){if(!cache[name]){const g=await gl.loadAsync(name+'.glb');prep(g.scene);cache[name]=g.scene;walkTargets.length=0}
+async function load(name){if(!cache[name]){const g=await gl.loadAsync(name+'.glb?v=6');prep(g.scene);cache[name]=g.scene;walkTargets.length=0}
  for(const k in cache)cache[k].traverse(o=>{if(o.isCSS2DObject)o.element.style.display=k===name?'':'none'});
  if(cur)S.remove(cur);cur=cache[name];S.add(cur);curName=name;
  document.querySelectorAll('#opts button').forEach(b=>b.classList.toggle('on',b.dataset.o===name));document.getElementById('title').textContent=TITLES[name];
@@ -197,7 +203,7 @@ document.querySelectorAll('#views button[data-v]').forEach(b=>b.onclick=()=>view
 const rs=()=>{cam.aspect=W()/H();cam.updateProjectionMatrix();R.setSize(W(),H());L2.setSize(W(),H())};addEventListener('resize',rs);new ResizeObserver(rs).observe(stage);
 const start=(location.hash.slice(1) in TITLES)?location.hash.slice(1):'option_a';
 await load(start);view('eye');document.getElementById('load').remove();window.__ready=true;loop();
-const idle=window.requestIdleCallback||(f=>setTimeout(f,1500));const pre=['existing','option_a','option_b','option_c'].filter(n=>n!==start);const next=()=>{const n=pre.shift();if(!n)return;if(cache[n])return idle(next);gl.loadAsync(n+'.glb').then(g=>{if(!cache[n]){prep(g.scene);beamify(g.scene);cache[n]=g.scene}}).catch(()=>{}).finally(()=>idle(next))};idle(next);
+const idle=window.requestIdleCallback||(f=>setTimeout(f,1500));const pre=['existing','option_a','option_b','option_c'].filter(n=>n!==start);const next=()=>{const n=pre.shift();if(!n)return;if(cache[n])return idle(next);gl.loadAsync(n+'.glb?v=6').then(g=>{if(!cache[n]){prep(g.scene);beamify(g.scene);cache[n]=g.scene}}).catch(()=>{}).finally(()=>idle(next))};idle(next);
 
 // ---------- Existing I-beam: safety orange, labeled, visible in every view ----------
 const ORANGE=new THREE.MeshStandardMaterial({color:0xff6a00,emissive:0xff4400,emissiveIntensity:0.55,roughness:0.5,metalness:0.1});
