@@ -15,12 +15,30 @@ button.on{background:#1f5fbf;color:#fff}
 #knob{position:absolute;left:35px;top:35px;width:50px;height:50px;border-radius:50%;background:rgba(31,95,191,.85)}
 #look{position:fixed;right:10px;bottom:84px;color:#223;font-size:12px;background:rgba(255,255,255,.7);padding:5px 8px;border-radius:8px;display:none;z-index:5}
 #load{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;font-size:20px;color:#223;z-index:9;background:#cfd8e3}
+#build{position:fixed;left:10px;top:104px;z-index:5;background:rgba(255,255,255,.92);border-radius:12px;padding:8px;box-shadow:0 2px 8px rgba(0,0,0,.2);max-width:300px;font-size:13px;color:#223}
+#build .st{display:block;width:100%;text-align:left;margin:4px 0;padding:8px 10px;font-size:14px}
+#build .key{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}#build .key i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:4px;vertical-align:-1px}
+#bstep{margin:6px 2px;font-size:13px;line-height:1.35}
+#howbtn{position:fixed;right:10px;top:10px;z-index:6;font-size:15px}
+#howbtn.on{background:#ff6a00;color:#fff}
+.lbl.beam{background:#ff6a00;color:#fff;font-weight:800;font-size:13px;border:2px solid #fff}
+.lbl.post{background:#c0392b;font-size:11px}
+#mp{position:fixed;top:0;right:0;bottom:0;width:38vw;min-width:260px;z-index:7;background:#111;display:none;flex-direction:column;resize:horizontal;overflow:auto;direction:rtl}
+#mp>*{direction:ltr}#mp iframe{flex:1;border:0;width:100%}
+#mp .h{display:flex;gap:6px;align-items:center;padding:6px;background:#223;color:#fff;font-size:13px}#mp .h button{padding:6px 10px;font-size:13px}
+#mpbtn{position:fixed;right:10px;top:62px;z-index:6;font-size:15px}
+@media (max-width:700px){#mp{width:100vw;top:0;resize:none}#build{top:auto;bottom:70px;max-width:none;left:6px;right:6px}#howbtn{top:auto;bottom:66px;right:6px;display:none}}
 </style></head><body>
 <div id="load">Loading roof model…</div>
 <div id="opts" class="bar"><button data-o="existing">Existing</button><button data-o="option_a">A</button><button data-o="option_b">B</button><button data-o="option_c">C</button></div>
 <div id="title"></div>
+<button id="howbtn">How it's built</button><button id="mpbtn">Matterport ▸</button>
+<div id="build" style="display:none"><b>How it's built (Option A platform)</b><div id="bsteps"></div><div id="bstep"></div>
+<div class="key"><span><i style="background:#ff6a00"></i>Existing I-beam</span><span><i style="background:#1e6fff"></i>New dunnage steel</span><span><i style="background:#c0392b"></i>New posts / bearing points</span></div></div>
+<div id="mp"><div class="h"><b style="flex:1">Matterport tour</b><button id="mpopen">Open ↗</button><button id="mpclose">✕</button></div><iframe id="mpf" allow="xr-spatial-tracking; fullscreen" allowfullscreen></iframe></div>
 <div id="views" class="bar"><button data-v="eye">Eye</button><button data-v="drone">Drone</button><button data-v="plan">Plan</button><button id="walk">Walk</button></div>
 <div id="joy"><div id="knob"></div></div><div id="look">Drag right side to look · WASD on keyboard</div>
+<script>window.MATTERPORT_URL='';</script>
 <script type="importmap">{"imports":{"three":"./lib/three.module.js","three/addons/":"./lib/jsm/"}}</script>
 <script type="module">
 import * as THREE from 'three';
@@ -76,7 +94,7 @@ async function load(name){if(!cache[name]){const g=await gl.loadAsync(name+'.glb
  document.querySelectorAll('#opts button').forEach(b=>b.classList.toggle('on',b.dataset.o===name));document.getElementById('title').textContent=TITLES[name];
  history.replaceState(null,'','#'+name);}
 const OC=new OrbitControls(cam,R.domElement);OC.enableDamping=true;OC.maxPolarAngle=Math.PI*0.495;OC.minDistance=3;OC.maxDistance=400;
-const V={eye:[[16,5.5,28],[11.93,4.78,18.9],72],drone:[[32,24,22],[25.17,17.69,18.32],70],plan:[[7.5,90,10.01],[7.5,0,10],40]};
+const V={eye:[[4,6.5,33],[9,3,12],65],drone:[[32,24,22],[25.17,17.69,18.32],70],plan:[[7.5,90,10.01],[7.5,0,10],40]};
 let walking=false;
 function view(k){setWalk(false);const[p,t,f]=V[k];cam.position.set(...p);OC.target.set(...t);cam.fov=f;cam.updateProjectionMatrix();OC.update();document.querySelectorAll('#views button[data-v]').forEach(b=>b.classList.toggle('on',b.dataset.v===k))}
 // walk mode
@@ -108,6 +126,48 @@ document.querySelectorAll('#views button[data-v]').forEach(b=>b.onclick=()=>view
 addEventListener('resize',()=>{cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();R.setSize(innerWidth,innerHeight);L2.setSize(innerWidth,innerHeight)});
 const start=(location.hash.slice(1) in TITLES)?location.hash.slice(1):'option_a';
 await load(start);view('eye');document.getElementById('load').remove();window.__ready=true;loop();
-['existing','option_a','option_b','option_c'].forEach(n=>{if(!cache[n])gl.loadAsync(n+'.glb').then(g=>{if(!cache[n]){prep(g.scene);cache[n]=g.scene}})});
-window.__api={load,view,setWalk,cam};
+['existing','option_a','option_b','option_c'].forEach(n=>{if(!cache[n])gl.loadAsync(n+'.glb').then(g=>{if(!cache[n]){prep(g.scene);beamify(g.scene);cache[n]=g.scene}})});
+
+// ---------- Existing I-beam: safety orange, labeled, visible in every view ----------
+const ORANGE=new THREE.MeshStandardMaterial({color:0xff6a00,emissive:0xff4400,emissiveIntensity:0.55,roughness:0.5,metalness:0.1});
+const GHOST=new THREE.MeshBasicMaterial({color:0xff6a00,transparent:true,opacity:0.35,depthTest:false});
+function beamify(root){if(root.userData.beam)return;root.userData.beam=1;const bb=new THREE.Box3();let n=0;
+ root.traverse(o=>{if(o.isMesh&&/^EXIST_I-beam/.test(o.name)){o.material=ORANGE;bb.expandByObject(o);n++}});
+ if(!n)return;const sz=new THREE.Vector3(),c=new THREE.Vector3();bb.getSize(sz);bb.getCenter(c);
+ const g=new THREE.Mesh(new THREE.BoxGeometry(sz.x,Math.max(sz.y,0.4),Math.max(sz.z,0.4)),GHOST);g.position.copy(c);g.renderOrder=999;g.name='beam_xray';root.add(g);
+ const d=document.createElement('div');d.className='lbl beam';d.textContent=`EXISTING I-BEAM (size TBV) · E-W, ${sz.x.toFixed(1)} ft`;const l=new CSS2DObject(d);l.position.set(c.x,bb.max.y+1.2,c.z);root.add(l);root.userData.beamBox=bb}
+for(const k in cache)beamify(cache[k]);
+const _load=load;async function load2(n){await _load(n);beamify(cache[n]);for(const k in cache)cache[k].traverse(o=>{if(o.isCSS2DObject)o.element.style.display=k===n?'':'none'});if(n!=='option_a'&&building)setBuild(false)}
+document.querySelectorAll('#opts button').forEach(b=>b.onclick=()=>load2(b.dataset.o));
+// ---------- How it's built ----------
+const POSTM=new THREE.MeshStandardMaterial({color:0xd0021b,emissive:0x600000,roughness:0.45});const STEEL=new THREE.MeshStandardMaterial({color:0x1e6fff,roughness:0.45,metalness:0.3});
+const cls=n=>/^(EXIST_|GROUND_|DEMO_|beam_xray)/.test(n)?0:/^(post|base_plate|stub)/i.test(n)?1:/^beam_/.test(n)?2:/^(grating|guardrail|toe_board|stair_)/.test(n)?3:4;
+const STEPS=[['1. Existing roof','The roof today. The orange steel is the existing E-W I-beam; the brick bearing walls are below the parapets. The old condensers come out.'],
+ ['2. Posts','Short steel posts (red) bolt down onto the existing I-beam and onto the bearing walls. That is how the new steel anchors to the building.'],
+ ['3. Dunnage beams','New steel beams (blue) sit on top of the posts and form a grid above the roof.'],
+ ['4. Platform','Grating deck, guardrails and stair go on the steel grid.'],
+ ['5. Equipment','Heat pumps, tanks and piping sit on the platform.']];
+let building=false,bstep=4,marks=null;
+const bs=document.getElementById('bsteps');STEPS.forEach((t,i)=>{const b=document.createElement('button');b.className='st';b.textContent=t[0];b.onclick=()=>setStep(i);bs.appendChild(b)});
+function bearing(root){if(marks)return marks;marks=new THREE.Group();const bb=root.userData.beamBox;let nb=0,nw=0;
+ root.traverse(o=>{if(o.isMesh&&/^post/.test(o.name)){const b=new THREE.Box3().setFromObject(o),c=new THREE.Vector3();b.getCenter(c);
+  const onBeam=bb&&Math.abs(c.z-(bb.min.z+bb.max.z)/2)<1.0;onBeam?nb++:nw++;
+  const m=new THREE.Mesh(new THREE.SphereGeometry(0.6,16,12),new THREE.MeshBasicMaterial({color:0xc0392b,depthTest:false}));m.renderOrder=998;m.position.set(c.x,b.min.y,c.z);marks.add(m)}});
+ const mk=(t,x,y,z)=>{const d=document.createElement('div');d.className='lbl post';d.textContent=t;const l=new CSS2DObject(d);l.position.set(x,y,z);marks.add(l)};
+ if(bb)mk(`${nb} posts bear on existing I-beam`,bb.max.x-3,bb.max.y+3,(bb.min.z+bb.max.z)/2);mk(`${nw} posts bear on bearing walls / roof structure (EOR)`,9,4,17);
+ root.add(marks);return marks}
+function setStep(i){bstep=i;const r=cache.option_a;bs.querySelectorAll('button').forEach((b,j)=>b.classList.toggle('on',j===i));document.getElementById('bstep').textContent=STEPS[i][1];
+ r.traverse(o=>{if(o.isMesh&&o.name!=='beam_xray'){const k=cls(o.name);if(/^DEMO_/.test(o.name))o.visible=i===0;else o.visible=k<=i;
+  if(k===1||k===2){if(!o.userData.om)o.userData.om=o.material;o.material=building?(k===1?POSTM:STEEL):o.userData.om}}});
+ r.children.forEach(c=>{if(c.isCSS2DObject&&!c.element.classList.contains('beam'))c.visible=(!building||i>=4)});
+ const m=bearing(r);m.visible=building&&i>=1&&i<=2;m.children.forEach(c=>{if(c.isCSS2DObject)c.element.style.display=m.visible?'':'none'})}
+async function setBuild(on){building=on;document.getElementById('howbtn').classList.toggle('on',on);document.getElementById('build').style.display=on?'block':'none';
+ if(on){if(curName!=='option_a')await load2('option_a');setStep(1);view('drone')}else if(cache.option_a){setStep(4);if(marks){marks.visible=false;marks.children.forEach(c=>{if(c.isCSS2DObject)c.element.style.display='none'})}}}
+document.getElementById('howbtn').onclick=()=>setBuild(!building);
+// ---------- Matterport side panel ----------
+const MP=new URLSearchParams(location.search).get('mp')||window.MATTERPORT_URL||'';
+const mp=document.getElementById('mp'),mpf=document.getElementById('mpf');
+function setMP(on){mp.style.display=on?'flex':'none';if(on&&!mpf.src)mpf.src=MP||'about:blank';if(on&&!MP)mpf.srcdoc='<p style="color:#fff;font:15px sans-serif;padding:16px">Matterport link not set. Add ?mp=&lt;tour URL&gt; to the address.</p>';document.getElementById('mpbtn').style.display=on?'none':''}
+document.getElementById('mpbtn').onclick=()=>setMP(true);document.getElementById('mpclose').onclick=()=>setMP(false);document.getElementById('mpopen').onclick=()=>window.open(MP,'_blank');
+window.__api={load:load2,view,setWalk,cam,setBuild,setStep,setMP};
 </script></body></html>
