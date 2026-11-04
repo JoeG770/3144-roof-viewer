@@ -38,7 +38,7 @@ button.on{background:#1f5fbf;color:#fff}
 <div id="mp"><div class="h"><b style="flex:1">Matterport tour</b><button id="mpopen">Open ↗</button><button id="mpclose">✕</button></div><iframe id="mpf" allow="xr-spatial-tracking; fullscreen" allowfullscreen></iframe></div>
 <div id="views" class="bar"><button data-v="eye">Eye</button><button data-v="drone">Drone</button><button data-v="plan">Plan</button><button id="walk">Walk</button></div>
 <div id="joy"><div id="knob"></div></div><div id="look">Drag right side to look · WASD on keyboard</div>
-<script>window.MATTERPORT_URL='https://my.matterport.com/show/?m=ghpD7KxLhnx&play=1';</script>
+<script>window.MATTERPORT_URL='https://my.matterport.com/show/?m=ghpD7KxLhnx&play=1&ss=277&sr=-2.96,.81&qs=1';</script>
 <script type="importmap">{"imports":{"three":"./lib/three.module.js","three/addons/":"./lib/jsm/"}}</script>
 <script type="module">
 import * as THREE from 'three';
@@ -169,5 +169,6 @@ const MP=new URLSearchParams(location.search).get('mp')||window.MATTERPORT_URL||
 const mp=document.getElementById('mp'),mpf=document.getElementById('mpf');
 function setMP(on){mp.style.display=on?'flex':'none';if(on&&!mpf.src)mpf.src=MP||'about:blank';if(on&&!MP)mpf.srcdoc='<p style="color:#fff;font:15px sans-serif;padding:16px">Matterport link not set. Add ?mp=&lt;tour URL&gt; to the address.</p>';document.getElementById('mpbtn').style.display=on?'none':''}
 document.getElementById('mpbtn').onclick=()=>setMP(true);document.getElementById('mpclose').onclick=()=>setMP(false);document.getElementById('mpopen').onclick=()=>window.open(MP,'_blank');
+if(innerWidth>900)setMP(true);
 window.__api={load:load2,view,setWalk,cam,setBuild,setStep,setMP};
 </script></body></html>
