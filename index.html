@@ -1,5 +1,5 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="icon" href="favicon.svg" type="image/svg+xml"><title>3144 Third Ave Roof Viewer</title>
 <style>
 :root{--bg:#f4f1ec;--ink:#24211d;--mute:#7a7268;--line:#e2dcd2;--card:#fffdf9;--acc:#2f5d8a;--or:#e8590c;--sh:0 1px 2px rgba(40,30,20,.06),0 8px 28px rgba(40,30,20,.08)}
@@ -38,10 +38,44 @@ button:hover{background:#faf7f2}
 #howbtn.on{background:var(--or);color:#fff;border-color:var(--or)}
 footer{max-width:1440px;margin:0 auto 24px;padding:0 24px;color:var(--mute);font-size:11.5px}
 @media (max-width:700px){.lbl:not(.beam){display:none}.lbl.beam{font-size:10px}header{padding:14px 12px 0}header h1{font-size:18px}.wrap{padding:0 8px}.panel{margin:10px auto;border-radius:12px}.ph{padding:10px}.seg button{padding:7px 11px}#stage,#mpf{height:60vh;min-height:320px}#legend{display:none}#build{left:8px;right:8px;max-width:none;top:auto;bottom:64px}#views button .t{display:none}}
+#measbtn{position:absolute;left:12px;bottom:14px;z-index:6;background:rgba(255,253,249,.94);box-shadow:var(--sh)}
+#measbtn.on{background:var(--ink);color:#fff}
+#meas{position:absolute;left:12px;bottom:62px;z-index:6;background:rgba(255,253,249,.97);border:1px solid var(--line);border-radius:12px;padding:10px;box-shadow:var(--sh);font-size:12.5px;display:none;max-width:280px}
+#meas .row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}#meas .row button{padding:7px 11px}
+#meas .row button.on{background:var(--ink);color:#fff}#mread{color:#4b453e;line-height:1.4}
+.lbl.wt{background:#5b2a86;font-size:11px;pointer-events:auto;cursor:pointer}.lbl.wt.est{background:#8a5a00}
+#wtbtn{position:absolute;left:12px;bottom:56px;z-index:6;display:flex;gap:6px;align-items:center;padding:8px 12px;border-radius:10px;border:1px solid rgba(0,0,0,.15);background:#fff;font:600 13px system-ui;cursor:pointer}#wtbtn.on{background:#5b2a86;color:#fff}
+#wtsum{position:absolute;left:12px;bottom:100px;z-index:6;background:rgba(255,255,255,.95);border-radius:10px;padding:8px 10px;font:12px system-ui;max-width:300px;display:none;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+@media (max-width:700px){.wton .lbl.wt{display:block}#wtsum{left:8px;right:8px;max-width:none;bottom:110px;font-size:11px}}
+.wton .lbl:not(.wt):not(.beam):not(.meas){visibility:hidden}
+.lbl.meas{background:#0b6e4f;font-weight:650;font-size:12px;display:block}
+@media (max-width:700px){#meas{left:8px;right:8px;max-width:none;bottom:60px}#measbtn{left:8px;bottom:10px}}
+
+/* ---- sidebar layout ---- */
+header{justify-content:flex-start;align-items:center}header small{display:none}
+#navbtn{display:none}
+.mpanel{display:flex;align-items:stretch}.mpanel>.ph{display:none}
+#side{width:272px;flex:0 0 272px;border-right:1px solid var(--line);background:#fbf9f5;padding:14px;display:flex;flex-direction:column;gap:14px;overflow-y:auto;max-height:calc(70vh + 46px)}
+#side h3{margin:0 0 6px;font-size:10.5px;font-weight:650;letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
+#side .sub{font-size:11.5px;color:var(--mute);letter-spacing:.03em}
+#side .seg{display:flex;width:100%}#side .seg button{flex:1;justify-content:center;padding:7px 6px}
+#side #views button .t{display:inline}#side #views{display:grid;grid-template-columns:1fr 1fr;gap:3px}
+#side .tools{display:grid;grid-template-columns:1fr 1fr;gap:6px}#side .tools button{justify-content:center}#side .tools #howbtn{grid-column:1/-1}
+#side #title{border:0;background:none;padding:0;font-size:12.5px}
+#side #views,#side #legend,#side #measbtn,#side #wtbtn,#side #meas,#side #wtsum,#side #build{position:static;transform:none;left:auto;right:auto;bottom:auto;top:auto;max-width:none;box-shadow:none;backdrop-filter:none}
+#side #legend{display:grid;background:#fff}#side #meas{background:#fff}#side #wtsum{background:#fff;border:1px solid var(--line);font-size:12px}#side #build{background:#fff}
+#side #wtbtn{font:inherit;font-size:13px;font-weight:550;padding:8px 13px;border:1px solid var(--line)}
+#mainc{flex:1;min-width:0;display:flex;flex-direction:column}
+#scrim{display:none}
+@media (max-width:700px){#navbtn{display:inline-flex;margin-right:6px;padding:7px 10px}
+ header{position:sticky;top:0;z-index:30;background:var(--bg);padding:10px 12px}
+ #side{position:fixed;left:0;top:0;bottom:0;z-index:40;max-height:none;width:84vw;max-width:320px;transform:translateX(-102%);transition:transform .22s ease;box-shadow:var(--sh)}
+ body.drawer #side{transform:none}body.drawer #scrim{display:block;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:35}
+ #side #legend{display:grid}#side #build{display:block}}
 </style></head><body>
-<header><h1>3144 Third Ave — Roof DHW Options</h1><small>Bronx, NY · Owner coordination model</small></header>
+<header><button id="navbtn" aria-label="Open controls">☰</button><h1>3144 Third Ave — Roof DHW Options</h1><small>Bronx, NY · Owner coordination model</small></header>
 <div class="wrap">
-<div class="panel"><div class="ph"><span class="cap">3D model</span>
+<div class="panel mpanel"><div class="ph"><span class="cap">3D model</span>
 <div id="opts" class="seg"><button data-o="existing">Existing</button><button data-o="option_a">A</button><button data-o="option_b">B</button><button data-o="option_c">C</button></div>
 <button id="howbtn">How it's built</button></div>
 <div id="title"></div>
@@ -49,13 +83,32 @@ footer{max-width:1440px;margin:0 auto 24px;padding:0 24px;color:var(--mute);font
 <div id="load">Loading roof model…</div>
 <div id="build" style="display:none"><b>How it's built (Option A platform)</b><div id="bsteps"></div><div id="bstep"></div>
 <div class="key"><span><i style="background:#e8590c"></i>Existing I-beams</span><span><i style="background:#1e6fff"></i>New steel</span><span><i style="background:#c0392b"></i>Posts</span></div></div>
+<button id="wtbtn" title="Show equipment weights">Weights</button><div id="wtsum"></div><button id="measbtn" title="Measure length or area"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17 17 3l4 4L7 21z"/><path d="M7 13l2 2M10 10l2 2M13 7l2 2"/></svg>Measure</button>
+<div id="meas"><div class="row"><button data-m="len" class="on">Length</button><button data-m="area">Area</button><button id="mdone">Close shape</button><button id="mclear">Clear</button></div><div id="mread">Tap two points to measure a length.</div></div>
 <div id="views" class="seg"><button data-v="eye"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><span class="t">Eye</span></button><button data-v="drone"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="5" r="2.5"/><circle cx="19" cy="5" r="2.5"/><circle cx="5" cy="19" r="2.5"/><circle cx="19" cy="19" r="2.5"/><rect x="9" y="9" width="6" height="6" rx="1"/><path d="M7 7l2 2M17 7l-2 2M7 17l2-2M17 17l-2-2"/></svg><span class="t">Drone</span></button><button data-v="plan"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 12h18M12 3v18"/></svg><span class="t">Plan</span></button><button id="walk"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="M10 21l2-6-3-3 1-5 4 3 3 1M8 13l-2 3"/></svg><span class="t">Walk</span></button></div>
 <div id="legend"><span><i style="background:#e8590c"></i>Existing I-beams</span><span><i style="background:#1e6fff"></i>New steel</span><span><i style="background:#1f5bd8"></i>Cold water</span><span><i style="background:#d62424"></i>150F hot</span><span><i style="background:#ff8a1f"></i>120F supply</span><span><i style="background:#7a3fc4"></i>Recirc return</span></div>
 <div id="joy"><div id="knob"></div></div><div id="look">Drag to look · WASD on keyboard</div>
 </div></div>
-<div class="panel" id="mp"><div class="ph"><span class="cap">Matterport: east equipment area</span><button id="mpreset">↺ Reset to location</button><button id="mpopen">Open full screen ↗</button></div><iframe id="mpf" allow="xr-spatial-tracking; fullscreen" allowfullscreen></iframe></div>
+<div class="panel" id="mp"><div class="ph"><span class="cap">Matterport: east equipment area</span><button id="mpreset">↺ Reset to location</button><button id="mpopen">Open full screen ↗</button></div><iframe id="mpf" loading="lazy" allow="xr-spatial-tracking; fullscreen" allowfullscreen></iframe></div>
 </div>
 <footer>Existing I-beam sizes to be field verified. Structural design by engineer of record. Not for construction.</footer>
+<div id="scrim"></div><script>(function(){
+const P=document.querySelector('.mpanel'),$=id=>document.getElementById(id)||main.querySelector('#'+id);
+const side=document.createElement('aside');side.id='side';const main=document.createElement('div');main.id='mainc';
+[...P.children].forEach(c=>{if(!c.classList.contains('ph'))main.appendChild(c)});
+const sec=(h,els,cls)=>{const d=document.createElement('section');d.innerHTML='<h3>'+h+'</h3>';const w=cls?document.createElement('div'):d;if(cls){w.className=cls;d.appendChild(w)}els.forEach(e=>e&&w.appendChild(e));side.appendChild(d);return d};
+const sub=document.createElement('div');sub.className='sub';sub.textContent='Bronx, NY · Owner coordination model';side.appendChild(sub);
+sec('Option',[$('opts'),$('title')]);
+const rv=document.createElement('button');rv.id='resetview';rv.textContent='↺ Reset view';
+sec('View',[$('views'),rv]);
+sec('Tools',[$('howbtn'),$('measbtn'),$('wtbtn')],'tools');
+const mob=matchMedia('(max-width:700px)').matches;if(mob){['meas','wtsum','build'].forEach(i=>main.querySelector('#stage').appendChild($(i)))}else sec('Panels',[$('meas'),$('wtsum'),$('build')]);
+sec('Legend',[$('legend')]);
+P.appendChild(side);P.appendChild(main);
+rv.onclick=()=>{const b=document.querySelector('#views button.on')||document.querySelector('#views button[data-v=eye]');b&&b.click()};
+const tog=o=>document.body.classList.toggle('drawer',o);$('navbtn').onclick=()=>tog(true);$('scrim').onclick=()=>tog(false);
+side.addEventListener('click',e=>{if(e.target.closest('#opts button,#views button,#resetview,#measbtn,#wtbtn,#howbtn')&&innerWidth<=700)setTimeout(()=>tog(false),150)});
+})();</script>
 <script>window.MATTERPORT_URL='https://my.matterport.com/show/?m=ghpD7KxLhnx&play=1&ss=277&sr=-2.96,.81&qs=1';</script>
 <script type="importmap">{"imports":{"three":"./lib/three.module.js","three/addons/":"./lib/jsm/"}}</script>
 <script type="module">
@@ -140,12 +193,11 @@ function step(dt){let f=(keys.KeyW||keys.ArrowUp?1:0)-(keys.KeyS||keys.ArrowDown
   if(fl!==null&&fl-old<1.6&&old-fl<3.5){cam.position.set(nx,fl+5.5,nz)}}
  cam.rotation.set(pitch,yaw,0,'YXZ')}
 function loop(){requestAnimationFrame(loop);const dt=Math.min(clk.getDelta(),0.1);if(walking)step(dt);else OC.update();R.render(S,cam);L2.render(S,cam)}
-document.querySelectorAll('#opts button').forEach(b=>b.onclick=()=>load(b.dataset.o));
 document.querySelectorAll('#views button[data-v]').forEach(b=>b.onclick=()=>view(b.dataset.v));
 const rs=()=>{cam.aspect=W()/H();cam.updateProjectionMatrix();R.setSize(W(),H());L2.setSize(W(),H())};addEventListener('resize',rs);new ResizeObserver(rs).observe(stage);
 const start=(location.hash.slice(1) in TITLES)?location.hash.slice(1):'option_a';
 await load(start);view('eye');document.getElementById('load').remove();window.__ready=true;loop();
-['existing','option_a','option_b','option_c'].forEach(n=>{if(!cache[n])gl.loadAsync(n+'.glb').then(g=>{if(!cache[n]){prep(g.scene);beamify(g.scene);cache[n]=g.scene}})});
+const idle=window.requestIdleCallback||(f=>setTimeout(f,1500));const pre=['existing','option_a','option_b','option_c'].filter(n=>n!==start);const next=()=>{const n=pre.shift();if(!n)return;if(cache[n])return idle(next);gl.loadAsync(n+'.glb').then(g=>{if(!cache[n]){prep(g.scene);beamify(g.scene);cache[n]=g.scene}}).catch(()=>{}).finally(()=>idle(next))};idle(next);
 
 // ---------- Existing I-beam: safety orange, labeled, visible in every view ----------
 const ORANGE=new THREE.MeshStandardMaterial({color:0xff6a00,emissive:0xff4400,emissiveIntensity:0.55,roughness:0.5,metalness:0.1});
@@ -188,7 +240,52 @@ document.getElementById('howbtn').onclick=()=>setBuild(!building);
 // ---------- Matterport panel (stacked under the 3D model) ----------
 const MP=new URLSearchParams(location.search).get('mp')||window.MATTERPORT_URL||'';
 const mp=document.getElementById('mp'),mpf=document.getElementById('mpf');
-mpf.src=MP;document.getElementById('mpreset').onclick=()=>{mpf.src='about:blank';setTimeout(()=>mpf.src=MP,60)};document.getElementById('mpopen').onclick=()=>window.open(MP,'_blank');
-function setMP(on){if(on)mp.scrollIntoView({behavior:'instant',block:'start'})}
+mpf.loading='lazy';let mpSet=false;const setSrc=()=>{if(!mpSet){mpSet=true;mpf.src=MP}};if('IntersectionObserver' in window){const io=new IntersectionObserver(e=>{if(e.some(x=>x.isIntersecting)){setSrc();io.disconnect()}},{rootMargin:'200px'});io.observe(mp)}else setSrc();document.getElementById('mpreset').onclick=()=>{mpf.src='about:blank';setTimeout(()=>mpf.src=MP,60)};document.getElementById('mpopen').onclick=()=>window.open(MP,'_blank');
+function setMP(on){if(on){setSrc();mp.scrollIntoView({behavior:'instant',block:'start'})}}
 window.__api={load:load2,view,setWalk,cam,setBuild,setStep,setMP};
+
+// ---- measuring tool (scene units = feet) ----
+const MG=new THREE.Group();S.add(MG);let mOn=false,mMode='len',pts=[],shapes=[],dn=null;
+const mMat=new THREE.MeshBasicMaterial({color:0x0b6e4f,depthTest:false}),lMat=new THREE.LineBasicMaterial({color:0x0b6e4f,depthTest:false});
+const fi=f=>{const t=Math.round(Math.abs(f)*12);return `${Math.floor(t/12)}' ${t%12}"`};
+const mread=document.getElementById('mread'),mbtn=document.getElementById('measbtn'),mpan=document.getElementById('meas');
+function dot(p){const m=new THREE.Mesh(new THREE.SphereGeometry(0.18,12,8),mMat);m.position.copy(p);m.renderOrder=999;MG.add(m);return m}
+function line(a,closed){const g=new THREE.BufferGeometry().setFromPoints(closed?[...a,a[0]]:a);const l=new THREE.Line(g,lMat);l.renderOrder=999;MG.add(l);return l}
+function tag(t,p){const d=document.createElement('div');d.className='lbl meas';d.textContent=t;const o=new CSS2DObject(d);o.position.copy(p);MG.add(o);return o}
+function areaOf(a){const n=new THREE.Vector3();for(let i=0;i<a.length;i++){const p=a[i],q=a[(i+1)%a.length];n.x+=(p.y-q.y)*(p.z+q.z);n.y+=(p.z-q.z)*(p.x+q.x);n.z+=(p.x-q.x)*(p.y+q.y)}return n.length()/2}
+let tmp=[];function clearTmp(){tmp.forEach(o=>{MG.remove(o);if(o.isCSS2DObject)o.element.remove()});tmp=[]}
+function mClear(){[...MG.children].forEach(o=>{MG.remove(o);if(o.isCSS2DObject)o.element.remove()});pts=[];tmp=[];mHint()}
+function mHint(){mread.textContent=mMode==='len'?(pts.length?'Tap the second point.':'Tap two points to measure a length.'):(pts.length<3?`Tap the corners (${pts.length} so far). Need 3 or more.`:`Area so far ${areaOf(pts).toFixed(1)} sq ft. Tap more corners, or Close shape.`)}
+function closeShape(){if(mMode!=='area'||pts.length<3)return;clearTmp();line(pts,true);const c=pts.reduce((a,p)=>a.add(p),new THREE.Vector3()).multiplyScalar(1/pts.length);
+ let per=0;for(let i=0;i<pts.length;i++)per+=pts[i].distanceTo(pts[(i+1)%pts.length]);const A=areaOf(pts);tag(`${A.toFixed(1)} sq ft`,c);mread.textContent=`Area ${A.toFixed(1)} sq ft · perimeter ${fi(per)}. Tap to start a new shape.`;pts=[]}
+function mPick(e){const r=R.domElement.getBoundingClientRect();const v=new THREE.Vector2((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);const rc=new THREE.Raycaster();rc.setFromCamera(v,cam);
+ if(!cur.userData.mbox){const bb=new THREE.Box3();cur.traverse(o=>{if(o.isMesh&&!/^(GROUND|beam_xray)/.test(o.name))bb.expandByObject(o)});bb.expandByScalar(2);cur.userData.mbox=bb}
+ const h=cur?rc.intersectObject(cur,true).find(i=>i.object.isMesh&&i.object.visible&&!/^(GROUND|beam_xray)/.test(i.object.name)&&i.distance<=200&&cur.userData.mbox.containsPoint(i.point)):null;
+ if(!h){mread.textContent='Tap on the roof or the equipment (points off the model are ignored).';return}const p=h.point.clone();
+ if(pts.length&&p.distanceTo(pts[pts.length-1])>200){mread.textContent='Point too far (over 200 ft). Ignored.';return}
+ if(mMode==='area'&&pts.length>=3&&p.distanceTo(pts[0])<0.6){closeShape();return}
+ pts.push(p);dot(p);
+ if(mMode==='len'){if(pts.length===2){const[a,b]=pts;line([a,b]);const d=a.distanceTo(b);tag(fi(d),a.clone().add(b).multiplyScalar(.5));mread.textContent=`Length ${fi(d)} (${d.toFixed(2)} ft). Tap to measure another.`;pts=[]}else mHint()}
+ else{clearTmp();if(pts.length>1)tmp.push(line(pts,pts.length>2));if(pts.length>2){const c=pts.reduce((a,q)=>a.add(q),new THREE.Vector3()).multiplyScalar(1/pts.length);tmp.push(tag(`${areaOf(pts).toFixed(1)} sq ft`,c))}mHint()}}
+R.domElement.addEventListener('pointerdown',e=>{if(mOn)dn=[e.clientX,e.clientY,performance.now()]});
+R.domElement.addEventListener('pointerup',e=>{if(!mOn||!dn)return;const mv=Math.hypot(e.clientX-dn[0],e.clientY-dn[1]),dt=performance.now()-dn[2];dn=null;if(mv<8&&dt<600)mPick(e)});
+mbtn.onclick=()=>{mOn=!mOn;if(mOn&&walking)setWalk(false);mbtn.classList.toggle('on',mOn);mpan.style.display=mOn?'block':'none';MG.visible=mOn;MG.children.forEach(o=>{if(o.isCSS2DObject)o.element.style.display=mOn?'':'none'});if(mOn)mHint()};
+mpan.querySelectorAll('button[data-m]').forEach(b=>b.onclick=()=>{mMode=b.dataset.m;pts=[];clearTmp();mpan.querySelectorAll('button[data-m]').forEach(x=>x.classList.toggle('on',x===b));document.getElementById('mdone').style.display=mMode==='area'?'':'none';mHint()});
+document.getElementById('mdone').style.display='none';document.getElementById('mdone').onclick=closeShape;document.getElementById('mclear').onclick=mClear;
+window.__meas={pick:mPick,close:closeShape,clear:mClear};
+
+// ---------- Equipment weights (dry / operating). Sources: roofmodel/out/weights.json; EST = estimated ----------
+const WT=[[/^tank\.?\d*$|^C_tank/,'700 gal tank · 204 lb dry / 6,046 lb full',0],[/^CX65\.?\d*$|^C_CX65/,'CX65 · 336 lb dry / ~346 lb op (water EST)',1],[/^QAHV\.?\d*$|^C_QAHV/,'QAHV-N136 · 895 lb dry / ~915 lb op (water EST)',1],[/^swing_tank$/,'Swing tank · EST 150 lb dry / 817 lb full (size TBD)',1],[/^C_TMV/,'Mixing valve · EST 40 / 50 lb',1]];
+const WSUM={"option_a": {"dry": 5003, "op": 16727, "b1": 2440, "b2": 12675, "p": 1611}, "option_b": {"dry": 4514, "op": 16905, "b1": 2711, "b2": 12721, "p": 1473}, "option_c": {"dry": 5164, "op": 16898, "b1": 2606, "b2": 12657, "p": 1635}};let wtOn=false;
+function wtify(root){if(root.userData.wt)return;root.userData.wt=1;let nW=0;const done=new Set();
+ root.traverse(o=>{if(done.has(o))return;const m=WT.find(w=>w[0].test(o.name));if(!m)return;o.traverse(x=>done.add(x));
+  const bb=new THREE.Box3().setFromObject(o);if(bb.isEmpty())return;const c=new THREE.Vector3();bb.getCenter(c);
+  const short=(m[1].match(/[\d,]+ lb (full|op)/)||m[1].match(/[\d,]+ lb/g).slice(-1))[0].replace(' full','').replace(' op','')+' op'+(m[2]?'*':'');const d=document.createElement('div');d.className='lbl wt'+(m[2]?' est':'');d.textContent=short;d.title=m[1];d.onclick=d.onmouseenter=()=>{d.textContent=m[1];d.style.zIndex=9};d.onmouseleave=()=>{d.textContent=short;d.style.zIndex=''};const l=new CSS2DObject(d);l.position.set(c.x,bb.max.y+0.6+(nW++%2)*1.1,c.z);l.userData.wt=1;l.visible=wtOn;root.add(l)})}
+function wtShow(){for(const k in cache){wtify(cache[k]);cache[k].traverse(o=>{if(o.userData&&o.userData.wt===1&&o.isCSS2DObject){o.visible=wtOn&&k===curName;o.element.style.display=(wtOn&&k===curName)?'':'none'}})}
+ const box=document.getElementById('wtsum'),w=WSUM[curName];document.getElementById('wtbtn').classList.toggle('on',wtOn);stage.classList.toggle('wton',wtOn);
+ box.style.display=wtOn?'block':'none';const f=n=>n.toLocaleString('en-US');
+ box.innerHTML=w?`<b>Total operating ${f(w.op)} lb</b> (dry ${f(w.dry)} lb)<br>I-beam 1: ${f(w.b1)} lb · I-beam 2: ${f(w.b2)} lb<br>Platform posts to deck: ${f(w.p)} lb<br><i>Simplified split, for EOR verification. Brown/* = estimated. Tap or hover a label for detail.</i>`:'Existing roof: no new equipment.'}
+document.getElementById('wtbtn').onclick=()=>{wtOn=!wtOn;wtShow()};
+document.querySelectorAll('#opts button').forEach(b=>{const f=b.onclick;b.onclick=async()=>{await f();wtShow()}});
+window.__wt={toggle:()=>{wtOn=!wtOn;wtShow()}};
 </script></body></html>
