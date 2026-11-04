@@ -2,43 +2,45 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <link rel="icon" href="favicon.svg" type="image/svg+xml"><title>3144 Third Ave Roof Viewer</title>
 <style>
-html,body{margin:0;height:100%;overflow:hidden;background:#cfd8e3;font-family:-apple-system,Segoe UI,Roboto,sans-serif;touch-action:none}
-#c{position:fixed;inset:0}
-.bar{position:fixed;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:5}
+html,body{margin:0;background:#e9edf2;font-family:-apple-system,Segoe UI,Roboto,sans-serif}
+.panel{margin:10px;border:3px solid #223;border-radius:14px;overflow:hidden;background:#cfd8e3;box-shadow:0 3px 12px rgba(0,0,0,.25)}
+.ph{background:#223;color:#fff;font-size:15px;font-weight:800;padding:8px 12px;display:flex;gap:8px;align-items:center}.ph span{flex:1}.ph button{padding:6px 10px;font-size:13px}
+#stage{position:relative;height:72vh;min-height:360px;touch-action:none;overflow:hidden}
+#c{position:absolute;inset:0;display:block}
+#mpf{display:block;width:100%;height:72vh;min-height:360px;border:0;background:#111}
+.bar{position:absolute;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:5}
 #opts{top:10px}#views{bottom:12px}
 button{border:0;border-radius:12px;padding:12px 16px;font-size:16px;font-weight:700;background:rgba(255,255,255,.85);color:#222;box-shadow:0 2px 8px rgba(0,0,0,.2);cursor:pointer}
 button.on{background:#1f5fbf;color:#fff}
 #opts button{min-width:64px;font-size:18px}
-#title{position:fixed;left:10px;top:66px;font-size:13px;color:#223;background:rgba(255,255,255,.7);padding:6px 9px;border-radius:8px;z-index:5;max-width:60vw}
+#title{position:absolute;left:10px;top:66px;font-size:13px;color:#223;background:rgba(255,255,255,.7);padding:6px 9px;border-radius:8px;z-index:5;max-width:60vw}
 .lbl{background:rgba(20,30,50,.8);color:#fff;font-size:12px;padding:3px 7px;border-radius:6px;white-space:nowrap;pointer-events:none}
-#joy{position:fixed;left:24px;bottom:84px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.35);border:2px solid rgba(255,255,255,.8);display:none;z-index:6;touch-action:none}
+#joy{position:absolute;left:24px;bottom:84px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.35);border:2px solid rgba(255,255,255,.8);display:none;z-index:6;touch-action:none}
 #knob{position:absolute;left:35px;top:35px;width:50px;height:50px;border-radius:50%;background:rgba(31,95,191,.85)}
-#look{position:fixed;right:10px;bottom:84px;color:#223;font-size:12px;background:rgba(255,255,255,.7);padding:5px 8px;border-radius:8px;display:none;z-index:5}
-#load{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;font-size:20px;color:#223;z-index:9;background:#cfd8e3}
-#build{position:fixed;left:10px;top:104px;z-index:5;background:rgba(255,255,255,.92);border-radius:12px;padding:8px;box-shadow:0 2px 8px rgba(0,0,0,.2);max-width:300px;font-size:13px;color:#223}
+#look{position:absolute;right:10px;bottom:84px;color:#223;font-size:12px;background:rgba(255,255,255,.7);padding:5px 8px;border-radius:8px;display:none;z-index:5}
+#load{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:20px;color:#223;z-index:9;background:#cfd8e3}
+#build{position:absolute;left:10px;top:104px;z-index:5;background:rgba(255,255,255,.92);border-radius:12px;padding:8px;box-shadow:0 2px 8px rgba(0,0,0,.2);max-width:300px;font-size:13px;color:#223}
 #build .st{display:block;width:100%;text-align:left;margin:4px 0;padding:8px 10px;font-size:14px}
 #build .key{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}#build .key i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:4px;vertical-align:-1px}
 #bstep{margin:6px 2px;font-size:13px;line-height:1.35}
-#howbtn{position:fixed;right:10px;top:10px;z-index:6;font-size:15px}
+#howbtn{position:absolute;right:10px;top:10px;z-index:6;font-size:15px}
 #howbtn.on{background:#ff6a00;color:#fff}
 .lbl.beam{background:#ff6a00;color:#fff;font-weight:800;font-size:13px;border:2px solid #fff}
 .lbl.post{background:#c0392b;font-size:11px}
-#mp{position:fixed;top:0;right:0;bottom:0;width:38vw;min-width:260px;z-index:7;background:#111;display:none;flex-direction:column;resize:horizontal;overflow:auto;direction:rtl}
-#mp>*{direction:ltr}#mp iframe{flex:1;border:0;width:100%}
-#mp .h{display:flex;gap:6px;align-items:center;padding:6px;background:#223;color:#fff;font-size:13px}#mp .h button{padding:6px 10px;font-size:13px}
-#mpbtn{position:fixed;right:10px;top:62px;z-index:6;font-size:15px}
-@media (max-width:700px){#mp{width:100vw;top:0;resize:none}#build{top:auto;bottom:70px;max-width:none;left:6px;right:6px}#howbtn{top:auto;bottom:66px;right:6px;display:none}}
+@media (max-width:700px){.panel{margin:6px}#stage,#mpf{height:62vh}#build{top:auto;bottom:70px;max-width:none;left:6px;right:6px}#howbtn{top:auto;bottom:66px;right:6px;display:none}}
 </style></head><body>
+<div class="panel"><div class="ph"><span>3D MODEL · 3144 Third Ave roof</span></div><div id="stage">
 <div id="load">Loading roof model…</div>
 <div id="opts" class="bar"><button data-o="existing">Existing</button><button data-o="option_a">A</button><button data-o="option_b">B</button><button data-o="option_c">C</button></div>
 <div id="title"></div>
-<button id="howbtn">How it's built</button><button id="mpbtn">Matterport ▸</button>
+<button id="howbtn">How it's built</button>
 <div id="build" style="display:none"><b>How it's built (Option A platform)</b><div id="bsteps"></div><div id="bstep"></div>
-<div class="key"><span><i style="background:#ff6a00"></i>Existing I-beam</span><span><i style="background:#1e6fff"></i>New dunnage steel</span><span><i style="background:#c0392b"></i>New posts / bearing points</span></div></div>
-<div id="mp"><div class="h"><b style="flex:1">Matterport tour</b><button id="mpopen">Open ↗</button><button id="mpclose">✕</button></div><iframe id="mpf" allow="xr-spatial-tracking; fullscreen" allowfullscreen></iframe></div>
+<div class="key"><span><i style="background:#ff6a00"></i>Existing I-beams 1 + 2</span><span><i style="background:#1e6fff"></i>New dunnage steel</span><span><i style="background:#c0392b"></i>New posts / bearing points</span></div></div>
 <div id="views" class="bar"><button data-v="eye">Eye</button><button data-v="drone">Drone</button><button data-v="plan">Plan</button><button id="walk">Walk</button></div>
 <div id="joy"><div id="knob"></div></div><div id="look">Drag right side to look · WASD on keyboard</div>
-<script>window.MATTERPORT_URL='https://my.matterport.com/show/?m=ghpD7KxLhnx&play=1&ss=277&sr=-2.96,.81&qs=1';</script>
+</div></div>
+<div class="panel" id="mp"><div class="ph"><span>MATTERPORT SCAN · real roof (starts at east-end condensers)</span><button id="mpopen">Open full screen ↗</button></div><iframe id="mpf" allow="xr-spatial-tracking; fullscreen" allowfullscreen></iframe></div>
+<script>window.MATTERPORT_URL='https://my.matterport.com/show/?m=ghpD7KxLhnx&ss=277&sr=-2.96,.81&qs=1';</script>
 <script type="importmap">{"imports":{"three":"./lib/three.module.js","three/addons/":"./lib/jsm/"}}</script>
 <script type="module">
 import * as THREE from 'three';
@@ -48,15 +50,16 @@ import {DRACOLoader} from 'three/addons/loaders/DRACOLoader.js';
 import {Sky} from 'three/addons/objects/Sky.js';
 import {CSS2DRenderer,CSS2DObject} from 'three/addons/renderers/CSS2DRenderer.js';
 import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
-const TITLES={existing:'EXISTING roof (as-built)',option_a:'OPTION A: 4 Chiltrix CX65 + 2 x 700 gal tanks on dunnage',option_b:'OPTION B: 2 Mitsubishi QAHV-N136 + tanks',option_c:'OPTION C: Option A + 9 PowerPanel PVT1 on steel canopy (22°)'};
+const TITLES={existing:'EXISTING roof (as-built)',option_a:'OPTION A: 4 Chiltrix CX65 + 2 x 700 gal tanks on dunnage',option_b:'OPTION B: 2 Mitsubishi QAHV-N136 + tanks',option_c:'OPTION C: Hybrid (G. Schultz): 1 QAHV-N136 > Tank 1 150F, 2 CX65 > Tank 2 recirc 120/110F, mixing valve 150>120F'};
 const mobile=matchMedia('(pointer:coarse)').matches;
+const stage=document.getElementById('stage');const W=()=>stage.clientWidth,H=()=>stage.clientHeight;
 const R=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});
-R.setPixelRatio(Math.min(devicePixelRatio,mobile?1.5:2));R.setSize(innerWidth,innerHeight);
+R.setPixelRatio(Math.min(devicePixelRatio,mobile?1.5:2));R.setSize(stage.clientWidth,stage.clientHeight);
 R.toneMapping=THREE.ACESFilmicToneMapping;R.toneMappingExposure=0.5;R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;
-R.domElement.id='c';document.body.appendChild(R.domElement);
-const L2=new CSS2DRenderer();L2.setSize(innerWidth,innerHeight);Object.assign(L2.domElement.style,{position:'fixed',top:0,left:0,pointerEvents:'none'});document.body.appendChild(L2.domElement);
+R.domElement.id='c';stage.appendChild(R.domElement);
+const L2=new CSS2DRenderer();L2.setSize(W(),H());Object.assign(L2.domElement.style,{position:'fixed',top:0,left:0,pointerEvents:'none'});stage.appendChild(L2.domElement);
 const S=new THREE.Scene();
-const cam=new THREE.PerspectiveCamera(60,innerWidth/innerHeight,0.3,3000);
+const cam=new THREE.PerspectiveCamera(60,W()/H(),0.3,3000);
 // sky + warm low sun (matches Blender SUN: warm 1.0/.66/.40)
 const sky=new Sky();sky.scale.setScalar(2500);S.add(sky);
 const sunDir=new THREE.Vector3(0.49,0.24,-0.84).normalize();
@@ -80,7 +83,7 @@ function fixMat(o){const m=o.material;if(!m||m.userData.fixed)return;m.userData.
  m.needsUpdate=true}
 const dl=new DRACOLoader().setDecoderPath('./lib/draco/');const gl=new GLTFLoader().setDRACOLoader(dl);
 const cache={};let cur=null,curName='';const labels=[];
-const LBL=[[/^tank(\.\d+)?$/,'700 gal tank'],[/^CX65(\.\d+)?$/,'CX65 heat pump'],[/^QAHV(\.\d+)?$/,'QAHV heat pump'],[/^swing_tank$/,'Swing tank'],[/^C_PVT1_panel_05/,'PVT array (9 × PVT1)']];
+const LBL=[[/^tank(\.\d+)?$/,'700 gal tank'],[/^CX65(\.\d+)?$/,'CX65 heat pump'],[/^QAHV(\.\d+)?$/,'QAHV heat pump'],[/^swing_tank$/,'Swing tank'],[/^C_QAHV/,'QAHV-N136 heat pump (150F)'],[/^C_CX65_1/,'CX65 #1'],[/^C_CX65_2/,'CX65 #2'],[/^C_tank1/,'Tank 1 · 700 gal · 150F'],[/^C_tank2/,'Tank 2 · 700 gal · recirc 120F'],[/^C_TMV/,'Mixing valve 150F→120F'],[/^pipe_CW_mains_1$/,'CW cold (blue)'],[/^pipe_150F_to_TMV_1$/,'150F (red)'],[/^pipe_120F_supply_to_bldg_2$/,'120F supply (orange)'],[/^pipe_recirc_return_from_bldg_1$/,'Recirc return 110F (purple)']];
 function boxUV(o,sz){const g=o.geometry;if(g.userData.buv)return;g.userData.buv=1;o.updateWorldMatrix(true,false);const p=g.attributes.position,n=g.attributes.normal,v=new THREE.Vector3(),w=new THREE.Vector3(),uv=new Float32Array(p.count*2);const nm=new THREE.Matrix3().getNormalMatrix(o.matrixWorld);
  for(let i=0;i<p.count;i++){v.fromBufferAttribute(p,i).applyMatrix4(o.matrixWorld);w.fromBufferAttribute(n,i).applyMatrix3(nm);const ax=Math.abs(w.x),ay=Math.abs(w.y),az=Math.abs(w.z);let a,b;if(ay>=ax&&ay>=az){a=v.x;b=v.z}else if(ax>=az){a=v.z;b=v.y}else{a=v.x;b=v.y}uv[2*i]=a/sz;uv[2*i+1]=b/sz}g.setAttribute('uv',new THREE.BufferAttribute(uv,2))}
 function prep(root){const lb=[];root.traverse(o=>{if(o.isMesh){const mn=o.material&&o.material.name;if(mn==='EXIST_brick')boxUV(o,2.67);if(mn==='EXIST_roofing'&&!o.geometry.attributes.uv)boxUV(o,3.25);o.castShadow=o.receiveShadow=true;(Array.isArray(o.material)?o.material:[o.material]).forEach(m=>fixMat({material:m}))}
@@ -123,7 +126,7 @@ function step(dt){let f=(keys.KeyW||keys.ArrowUp?1:0)-(keys.KeyS||keys.ArrowDown
 function loop(){requestAnimationFrame(loop);const dt=Math.min(clk.getDelta(),0.1);if(walking)step(dt);else OC.update();R.render(S,cam);L2.render(S,cam)}
 document.querySelectorAll('#opts button').forEach(b=>b.onclick=()=>load(b.dataset.o));
 document.querySelectorAll('#views button[data-v]').forEach(b=>b.onclick=()=>view(b.dataset.v));
-addEventListener('resize',()=>{cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();R.setSize(innerWidth,innerHeight);L2.setSize(innerWidth,innerHeight)});
+const rs=()=>{cam.aspect=W()/H();cam.updateProjectionMatrix();R.setSize(W(),H());L2.setSize(W(),H())};addEventListener('resize',rs);new ResizeObserver(rs).observe(stage);
 const start=(location.hash.slice(1) in TITLES)?location.hash.slice(1):'option_a';
 await load(start);view('eye');document.getElementById('load').remove();window.__ready=true;loop();
 ['existing','option_a','option_b','option_c'].forEach(n=>{if(!cache[n])gl.loadAsync(n+'.glb').then(g=>{if(!cache[n]){prep(g.scene);beamify(g.scene);cache[n]=g.scene}})});
@@ -131,30 +134,32 @@ await load(start);view('eye');document.getElementById('load').remove();window.__
 // ---------- Existing I-beam: safety orange, labeled, visible in every view ----------
 const ORANGE=new THREE.MeshStandardMaterial({color:0xff6a00,emissive:0xff4400,emissiveIntensity:0.55,roughness:0.5,metalness:0.1});
 const GHOST=new THREE.MeshBasicMaterial({color:0xff6a00,transparent:true,opacity:0.35,depthTest:false});
-function beamify(root){if(root.userData.beam)return;root.userData.beam=1;const bb=new THREE.Box3();let n=0;
- root.traverse(o=>{if(o.isMesh&&/^EXIST_I-beam/.test(o.name)){o.material=ORANGE;bb.expandByObject(o);n++}});
- if(!n)return;const sz=new THREE.Vector3(),c=new THREE.Vector3();bb.getSize(sz);bb.getCenter(c);
- const g=new THREE.Mesh(new THREE.BoxGeometry(sz.x,Math.max(sz.y,0.4),Math.max(sz.z,0.4)),GHOST);g.position.copy(c);g.renderOrder=999;g.name='beam_xray';root.add(g);
- const d=document.createElement('div');d.className='lbl beam';d.textContent=`EXISTING I-BEAM (size TBV) · E-W, ${sz.x.toFixed(1)} ft`;const l=new CSS2DObject(d);l.position.set(c.x,bb.max.y+1.2,c.z);root.add(l);root.userData.beamBox=bb}
+function beamify(root){if(root.userData.beam)return;root.userData.beam=1;root.userData.beams=[];
+ for(const k of [1,2]){const bb=new THREE.Box3();let n=0;
+  root.traverse(o=>{if(o.isMesh&&new RegExp('^EXIST_I-beam_'+k).test(o.name)){o.material=ORANGE;bb.expandByObject(o);n++}});
+  if(!n)continue;const sz=new THREE.Vector3(),c=new THREE.Vector3();bb.getSize(sz);bb.getCenter(c);
+  const g=new THREE.Mesh(new THREE.BoxGeometry(sz.x,Math.max(sz.y,0.4),Math.max(sz.z,0.4)),GHOST);g.position.copy(c);g.renderOrder=999;g.name='beam_xray';root.add(g);
+  const d=document.createElement('div');d.className='lbl beam';d.textContent=`EXISTING I-BEAM ${k} (size TBV) · E-W, ${sz.x.toFixed(1)} ft`;const l=new CSS2DObject(d);l.position.set(c.x+(k===1?-3:3),bb.max.y+(k===1?1.2:2.6),c.z);root.add(l);root.userData.beams.push({k,bb})}
+ root.userData.beamBox=root.userData.beams[0]&&root.userData.beams[0].bb}
 for(const k in cache)beamify(cache[k]);
 const _load=load;async function load2(n){await _load(n);beamify(cache[n]);for(const k in cache)cache[k].traverse(o=>{if(o.isCSS2DObject)o.element.style.display=k===n?'':'none'});if(n!=='option_a'&&building)setBuild(false)}
 document.querySelectorAll('#opts button').forEach(b=>b.onclick=()=>load2(b.dataset.o));
 // ---------- How it's built ----------
 const POSTM=new THREE.MeshStandardMaterial({color:0xd0021b,emissive:0x600000,roughness:0.45});const STEEL=new THREE.MeshStandardMaterial({color:0x1e6fff,roughness:0.45,metalness:0.3});
 const cls=n=>/^(EXIST_|GROUND_|DEMO_|beam_xray)/.test(n)?0:/^(post|base_plate|stub)/i.test(n)?1:/^beam_/.test(n)?2:/^(grating|guardrail|toe_board|stair_)/.test(n)?3:4;
-const STEPS=[['1. Existing roof','The roof today. The orange steel is the existing E-W I-beam; the brick bearing walls are below the parapets. The old condensers come out.'],
- ['2. Posts','Short steel posts (red) bolt down onto the existing I-beam and onto the bearing walls. That is how the new steel anchors to the building.'],
+const STEPS=[['1. Existing roof','The roof today. The two orange steel members are the existing E-W I-beams 1 and 2 (seen in the Matterport at the east condensers); the brick bearing walls are below the parapets. The old condensers come out.'],
+ ['2. Posts','Short steel posts (red) bolt down onto existing I-beams 1 and 2 and onto the bearing walls. That is how the new steel anchors to the building.'],
  ['3. Dunnage beams','New steel beams (blue) sit on top of the posts and form a grid above the roof.'],
  ['4. Platform','Grating deck, guardrails and stair go on the steel grid.'],
  ['5. Equipment','Heat pumps, tanks and piping sit on the platform.']];
 let building=false,bstep=4,marks=null;
 const bs=document.getElementById('bsteps');STEPS.forEach((t,i)=>{const b=document.createElement('button');b.className='st';b.textContent=t[0];b.onclick=()=>setStep(i);bs.appendChild(b)});
-function bearing(root){if(marks)return marks;marks=new THREE.Group();const bb=root.userData.beamBox;let nb=0,nw=0;
+function bearing(root){if(marks)return marks;marks=new THREE.Group();const BS=root.userData.beams||[];const cnt={};let nw=0;
  root.traverse(o=>{if(o.isMesh&&/^post/.test(o.name)){const b=new THREE.Box3().setFromObject(o),c=new THREE.Vector3();b.getCenter(c);
-  const onBeam=bb&&Math.abs(c.z-(bb.min.z+bb.max.z)/2)<1.0;onBeam?nb++:nw++;
+  const hit=BS.find(e=>Math.abs(c.z-(e.bb.min.z+e.bb.max.z)/2)<0.6&&c.x>=e.bb.min.x-0.5&&c.x<=e.bb.max.x+0.5);hit?cnt[hit.k]=(cnt[hit.k]||0)+1:nw++;
   const m=new THREE.Mesh(new THREE.SphereGeometry(0.6,16,12),new THREE.MeshBasicMaterial({color:0xc0392b,depthTest:false}));m.renderOrder=998;m.position.set(c.x,b.min.y,c.z);marks.add(m)}});
  const mk=(t,x,y,z)=>{const d=document.createElement('div');d.className='lbl post';d.textContent=t;const l=new CSS2DObject(d);l.position.set(x,y,z);marks.add(l)};
- if(bb)mk(`${nb} posts bear on existing I-beam`,bb.max.x-3,bb.max.y+3,(bb.min.z+bb.max.z)/2);mk(`${nw} posts bear on bearing walls / roof structure (EOR)`,9,4,17);
+ BS.forEach(e=>mk(`${cnt[e.k]||0} posts bear on existing I-beam ${e.k}`,e.bb.max.x-2,e.bb.max.y+(e.k===1?4.2:3),(e.bb.min.z+e.bb.max.z)/2));mk(`${nw} posts bear on bearing walls / roof structure (EOR)`,9,4,17);
  root.add(marks);return marks}
 function setStep(i){bstep=i;const r=cache.option_a;bs.querySelectorAll('button').forEach((b,j)=>b.classList.toggle('on',j===i));document.getElementById('bstep').textContent=STEPS[i][1];
  r.traverse(o=>{if(o.isMesh&&o.name!=='beam_xray'){const k=cls(o.name);if(/^DEMO_/.test(o.name))o.visible=i===0;else o.visible=k<=i;
@@ -164,11 +169,10 @@ function setStep(i){bstep=i;const r=cache.option_a;bs.querySelectorAll('button')
 async function setBuild(on){building=on;document.getElementById('howbtn').classList.toggle('on',on);document.getElementById('build').style.display=on?'block':'none';
  if(on){if(curName!=='option_a')await load2('option_a');setStep(1);view('drone')}else if(cache.option_a){setStep(4);if(marks){marks.visible=false;marks.children.forEach(c=>{if(c.isCSS2DObject)c.element.style.display='none'})}}}
 document.getElementById('howbtn').onclick=()=>setBuild(!building);
-// ---------- Matterport side panel ----------
+// ---------- Matterport panel (stacked under the 3D model) ----------
 const MP=new URLSearchParams(location.search).get('mp')||window.MATTERPORT_URL||'';
 const mp=document.getElementById('mp'),mpf=document.getElementById('mpf');
-function setMP(on){mp.style.display=on?'flex':'none';if(on&&!mpf.src)mpf.src=MP||'about:blank';if(on&&!MP)mpf.srcdoc='<p style="color:#fff;font:15px sans-serif;padding:16px">Matterport link not set. Add ?mp=&lt;tour URL&gt; to the address.</p>';document.getElementById('mpbtn').style.display=on?'none':''}
-document.getElementById('mpbtn').onclick=()=>setMP(true);document.getElementById('mpclose').onclick=()=>setMP(false);document.getElementById('mpopen').onclick=()=>window.open(MP,'_blank');
-if(innerWidth>900)setMP(true);
+mpf.src=MP;document.getElementById('mpopen').onclick=()=>window.open(MP,'_blank');
+function setMP(on){if(on)mp.scrollIntoView({behavior:'instant',block:'start'})}
 window.__api={load:load2,view,setWalk,cam,setBuild,setStep,setMP};
 </script></body></html>
